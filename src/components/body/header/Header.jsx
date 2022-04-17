@@ -1,0 +1,28 @@
+import './Header.scss';
+import { Link } from "react-router-dom";
+import {BsFillBookmarkFill} from 'react-icons/bs'
+
+const Header = ()=>{
+    return(
+        <div className="containerHeader">
+            <div className="title">
+                <span><BsFillBookmarkFill className='bookmark'/></span>
+                <h1>Public Library</h1>
+            </div>
+            <div className="navbar">
+                <ul>
+                    <Link to={'/'}>Home</Link>
+                    <Link to={'/about'}>About</Link>
+                    <Link to={'/books'}>Books</Link>
+                    <Link to={'/events'}>Events</Link>
+                    <Link to={'/contacts'}>Contacts</Link>
+                </ul>
+            </div>
+            <div className="login">
+                <p>Log In</p>
+                <button>Donate</button>
+            </div>
+        </div>
+    )
+}
+export default Header;
