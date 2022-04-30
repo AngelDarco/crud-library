@@ -1,7 +1,7 @@
 //import { Auth } from "../../../context/Context";
 
 //import Login from "../login/Login";
-import Logout from "../logout/Logout";
+//import Logout from "../logout/Logout";
 
 //import Register from "../register/Register";
 
@@ -16,8 +16,8 @@ const Home = ()=>{
         <>
             {/* <h1>Welcome Home ... {data.user}</h1> 
              <Register/> 
-             <Login/>*/}
-             <Logout/>
+             <Login/>
+             <Logout/>*/}
         </>
     )
 }
