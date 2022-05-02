@@ -13,7 +13,6 @@ import { getAuth } from "firebase/auth";
   appId: import.meta.env.VITE_APP_ID_ENV
 }; 
 
-console.log(firebaseConfig)
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
