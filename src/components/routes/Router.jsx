@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import Main from "../body/main/Main";
 import Login from '../sesion/login/Login'
+import Register from "../sesion/register/Register";
+import Logout from "../sesion/logout/Logout";
 
 const Router = ()=>{
     return(
@@ -8,6 +10,8 @@ const Router = ()=>{
         <Routes>
             <Route path='/' element={<Main/>} />
             <Route path='/login' element={<Login/>} />
+            <Route path='/logout' element={<Logout/>} />
+            <Route path='/register' element={<Register/>} />
         </Routes>
     </>
     )
