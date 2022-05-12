@@ -1,8 +1,13 @@
 import './Header.scss';
 import { Link } from "react-router-dom";
-import {BsFillBookmarkFill} from 'react-icons/bs'
+import { BsFillBookmarkFill } from 'react-icons/bs'
+import { Auth } from '../../../context/Context';
 
 const Header = ()=>{
+    const { userData } = Auth()
+    const { user } = userData;
+    const userName = user.split('@')
+
     return(
         <div className="containerHeader">
             <div className="title">
@@ -19,10 +24,11 @@ const Header = ()=>{
                 </ul>
             </div>
             <div className="login">
-                <p>Log In</p>
+                <p>{userName[0]}</p>
                 <button>Donate</button>
             </div>
         </div>
     )
+    
 }
 export default Header;
