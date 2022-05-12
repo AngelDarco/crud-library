@@ -3,24 +3,26 @@ import { useState } from "react";
 import RegisterAuth from './RegisterAuth';
 import { Auth } from '../../../context/Context';
 import Main from '../../body/main/Main';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
-    const [userData, setUserData] = useState({})
+    const [usersData, setUsersData] = useState({})
 
-    const { uid, user } = Auth()
-    
+    const { userData } = Auth()
+    const { uid } = userData;
+
     const handlerInput = ({ target }) => {
-        setUserData({ ...userData, [target.name]: target.value });
+        setUsersData({ ...usersData, [target.name]: target.value });
     }
     const handlerSubmit = (event) => {
         event.preventDefault();
-        RegisterAuth(userData);
+        RegisterAuth(usersData);
     }
 
     return (
         <>
             { 
-                 uid !== '' && user !== ''
+                 uid !== ''
                 ? <Main/> : 
                 <div className="registerContainer">
                     <h1>Log Up</h1>
@@ -30,6 +32,7 @@ const Register = () => {
                         <label htmlFor="pass">pass</label>
                         <input onChange={(e) => handlerInput(e)} type="password" name="pass" id="pass" />
                         <button type="submit">Log Up</button>
+                        <button className='login'><Link to='/login'>Login</Link></button>
                     </form>
                 </div>
             }
