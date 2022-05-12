@@ -3,27 +3,28 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Auth } from '../../../context/Context';
 import Main from '../../body/main/Main';
+import LoginAuth from './LoginAuth';
 
 const Login = ()=>{
-    const [ userData, setUserData ] = useState({});
-    const userIds = Auth();
-    const { uid, email } = userIds;
+    const [ usersData, setUsersData ] = useState({});
+    const { userData, setUserData } = Auth();
+    const { uid } = userData;
 
     const handlerInput = ({target})=>{
-        setUserData({
-            ...userData,[target.name] : target.value  
+        setUsersData({
+            ...usersData,[target.name] : target.value  
         })
     }
 
     const handlerSubmit = (ev)=>{
         ev.preventDefault();
-        console.log(userData);
+        LoginAuth(usersData, setUserData)
     }
 
     return (
         <>
         {
-            uid !== '' && email !== ''
+            uid !== ''
             ? <Main/> 
             :
             <div className='loginContainer'>
