@@ -19,6 +19,7 @@
     "firebase": "^9.6.10",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
+    "react-app-env": "^1.2.3",
     "react-icons": "^4.3.1",
     "react-router-dom": "^6.3.0",
     "sass": "^1.50.0",
