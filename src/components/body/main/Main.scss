@@ -1,0 +1,91 @@
+@mixin dFlex {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.containerMain{
+    @include dFlex();
+    align-items: flex-start;
+    width: 80%;
+    height: 100%;
+    margin: auto;
+
+    .recommended{
+        flex: 3;
+        width: 100%;
+        height: 100%;
+        .text{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 3rem;  
+            
+            & :nth-child(1){
+                font-weight: bold;
+                font-size: .9rem;
+                text-transform: uppercase;
+            }
+        }
+    
+        .cards{
+            width: 100%;
+            height: 100vh;
+            overflow-y: scroll;
+           }& ::-webkit-scrollbar{
+            display: none;
+        }
+    
+    }
+
+    .more{
+        margin-top: 5%;
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        div{
+            padding: 2% 5%;
+            p{
+                padding: 5% 0;
+                border-bottom: 1px solid #555;
+                
+            }
+            svg{
+                color: #2ddb4a; 
+                margin-right: 1rem
+            }
+        }
+
+        .login{
+            padding-right: 1rem;
+            padding-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            a{
+                text-decoration: none;
+                color: inherit;
+                text-shadow: 0 0 5px #2ddb4a,
+                            0 0 10px #2ddb4a
+            }
+        }
+
+        .search{
+            @include dFlex();
+            margin: 0 5% 5%;
+            height: 2rem;
+            background-color: #fff;
+            input{
+                border: none;
+                width: 90%;
+            }
+            svg{
+            color: #000;
+            margin: 0
+            }
+        }
+    }
+
+}//End Key
