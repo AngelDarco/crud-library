@@ -15,11 +15,48 @@
         align-items: center;
         justify-content: center;
         flex-flow: column;
+        position: relative;
         :nth-child(2) {
             font-size: 1.3rem;
             padding: .3rem;
         }
 
+    .icons{
+        background-color: #0009;
+        width: 90%;
+        height: 3rem;
+        position: absolute;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 1rem;
+        div{
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        div:nth-child(2){
+            justify-content: space-around;
+        }
+
+        div:nth-child(1) svg{
+            color: #fcd705;
+        }
+        svg{
+        color: #00ac95;
+        font-size: 2.5rem;
+        }
+        .likes{
+            border: 1px solid red;
+            .hidden{
+                border: 3px solid #fcd705;
+                display: none;
+            }
+        }
+    }
+    
     img{
 
         width: 90%;
