@@ -40,20 +40,27 @@
         div:nth-child(2){
             justify-content: space-around;
         }
+        .download{
+            color: #fd0000b7;
+        } 
+        .undownload{
+            color: #f5f5f58f;
+        }
 
-        div:nth-child(1) svg{
-            color: #fcd705;
+        .like{
+            color: #09ff00b6;
+        }
+        .dislike{
+            color: #f5f5f58f;
+        }
+        .avalible{
+            color: #fcd7058f;
+        }
+        .unavalible{
+            color: #fc0505b7;
         }
         svg{
-        color: #00ac95;
         font-size: 2.5rem;
-        }
-        .likes{
-            border: 1px solid red;
-            .hidden{
-                border: 3px solid #fcd705;
-                display: none;
-            }
         }
     }
     
