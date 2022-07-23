@@ -3,6 +3,8 @@ import Main from "../body/main/Main";
 import Login from '../sesion/login/Login'
 import Register from "../sesion/register/Register";
 import Logout from "../sesion/logout/Logout";
+import AddBooks from "../pages/addBooks/AddBooks"
+
 
 const Router = ()=>{
     return(
@@ -12,6 +14,7 @@ const Router = ()=>{
             <Route path='/login' element={<Login/>} />
             <Route path='/logout' element={<Logout/>} />
             <Route path='/register' element={<Register/>} />
+            <Route path='/addBook' element={<AddBooks />} />
         </Routes>
     </>
     )
