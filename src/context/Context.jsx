@@ -6,7 +6,6 @@ const context = createContext();
 const userValue = {
     uid: '',
     user: '',
-    likes: false 
 }
 
 export const Auth = ()=>{
@@ -23,7 +22,6 @@ export const AuthProvider = ({children })=>{
                 setUserData({
                     uid: currentUser.uid,
                     user: currentUser.email,
-                    likes: localStorage.getItem(currentUser.uid)
                 })
                 :
                 setUserData({
