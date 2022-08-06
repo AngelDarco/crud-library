@@ -14,9 +14,10 @@ const { uid } = userData;
 
 function WriteData({autor,name,img}){
     if(!autor || !name || !img) return
+    const key = uuid()
     const loadImg = ()=>{
         const storage = getStorage();
-        const refImg =  storageRef(storage,'Books/'+uuid()+img.name);
+        const refImg =  storageRef(storage,'Books/'+key+img.name);
                   
         return new Promise((resolve,reject) =>
                     uploadBytes(refImg,img)
@@ -33,8 +34,8 @@ function WriteData({autor,name,img}){
         return new Promise( (resolve,reject) =>
         loadImg()
             .then(res => {
-                     set(ref(db,'books/'+uid+'/'+uuid()),{
-                        id: uuid(),
+                     set(ref(db,'books/'+uid+'/'+key),{
+                        id: key,
                         autor,
                         name,
                         img:res,
@@ -69,13 +70,9 @@ function ReadData(id='public'){
 }
 
 function UpdateData({id,like,avalible,download}){
-    const newData = {
-        like,
-        avalible,
-        download
-    }
+    const newData = { like, avalible, download }
     if(uid !== '' && id )
-        update(ref(db,'books/'+uid+'/'+id),newData)
+        return update(ref(db,'books/'+uid+'/'+id),newData)
 }
 
     return { WriteData, ReadData, UpdateData, loading };
