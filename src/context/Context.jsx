@@ -30,6 +30,7 @@ export const AuthProvider = ({children })=>{
                 })
             })
         })()
+        return ()=> setUserData(userValue)
     },[])
 
     return(
