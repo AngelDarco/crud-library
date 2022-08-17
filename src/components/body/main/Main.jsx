@@ -38,7 +38,7 @@ const Main = ()=>{
                 </div>
                 <div className="news">
                     <h3><BsFillStarFill/> New &#38; Notable </h3>
-                    <p>Recent Activity</p>
+                    {user !== '' && <Link to={'/addBook'}>Add book</Link>}
                     <p>New titles</p>
                     <p>Award Winners</p>
                     <p>Bestellers</p>
