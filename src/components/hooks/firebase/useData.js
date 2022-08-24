@@ -6,6 +6,7 @@ import uuid from 'react-uuid';
 import { useState, useEffect, useCallback } from 'react';
 
 const useData = () => {
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [render, setRender] = useState(false);
 
@@ -55,115 +56,90 @@ const useData = () => {
 
 
     function ReadData() {
-        const [data, setData] = useState([]);
-        const [publicData, setPublicData] = useState([]);
-        const [usersData, setUsersData] = useState([]);
 
-
-        useEffect(() => {
-                    onValue(ref(db, 'books/public/'), snapshot => {
-                        // setPublicData([]);
-                        const database = snapshot.val();
-                        if (database !== null) {
-                            let arr = [];
-                            Object.values(database).map(db => {
-                                arr.push(db);
-                            })
-                            setPublicData(arr);
-                        }
-                    })
-                    // return(()=>setPublicData([]))
-        }, [])
-
-        useEffect(() => {
-                    onValue(ref(db, 'books/users/' + uid), snapshot => {
-                        // setUsersData([]);
-                        const database = snapshot.val();
-                        let arr = [];
-                        if (database !== null) {
-                            Object.values(database).map(db => {
-                                arr.push(db);
-                            })
-                            setUsersData(arr)
-                        }
-                    })
-                    // return(()=>setUsersData([]))
-                    //eslint-disable-next-line
+         useEffect(() => {
+            uid ? 
+            (async()=>{
+                await
+                onValue(ref(db, 'books/users/' + uid), snapshot => {
+                    const database = snapshot.val();
+                    let arr = [];
+                    if (database !== null) {
+                        Object.values(database).map(db => {
+                            arr.push(db);
+                        })
+                    }
+                    if(arr.length !== 0)
+                        setData(arr)
+                        setLoading(false)
+                })
+            }) () 
+            :
+            (async()=>{
+                await
+                onValue(ref(db, 'books/public/'), snapshot => {
+                    const database = snapshot.val();
+                    let arr = [];
+                    if (database !== null) {
+                        Object.values(database).map(db => {
+                            arr.push(db);
+                        })
+                    }
+                    if(arr.length !== 0)
+                        setData(arr)
+                        setLoading(false)
+                })
+            }) () 
+            //eslint-disable-next-line
         }, [render])
 
-
-
-
-        useEffect(()=>{
-            // console.log(usersData,publicData)
-            // if(usersData.length === 0){
-            //     console.log('en el if')
-            //     setData(publicData);
-            //     setLoading(false);
-            //     return
-            //  }
-           
-                // console.log('en el else')         
-                if(data.length !== 0){
-                usersData.map(item => {
-                    setData(newArr(publicData,item))
-                })
-                    setLoading(false)
-                }
-                
-        },[data.length, publicData, usersData])
-
-
-
-        const newArr = (publicDB, usersDB)=> {
-            console.log('in the function')
-
-            const arr = [];
-            publicDB.map(itemPublic => {
-                let item; 
-                if(!usersDB.id){
-                    console.log('if function')
-                    Object.values(usersDB).map(itemUser =>{
-                    itemPublic.id === itemUser.id 
-                    ? item = itemUser
-                    : item = itemPublic    
-                    })
-                }else{
-                    console.log('else function')
-                    itemPublic.id === usersDB.id
-                    ? item = usersDB
-                    : item = itemPublic
-                }
-                    item
-                    ? arr.push(item)
-                    : arr.push(itemPublic)
-            })
-            console.log(arr)
-            return arr
+        if(data.length >= 1 ){
+            if(data[0].id)
+                return data
+            else {
+                return Object.values(data[0])}
         }
-
-        
-    return data
-
     } //end method 
 
 
 
+    function LoginData(){
+    useCallback(()=>{
+        if(uid){
+               (async()=>{
+                await
+                onValue(ref(db, 'books/public/'), snapshot => {
+                    const database = snapshot.val();
+                    if (database !== null) {
+                        Object.values(database).map(data => {
+                           (async()=>{
+                                await
+                                set(ref(db,`books/users/${uid}/${data.id}`),data)
+                           })()
+                        })
+                    }
+                })
+                })()
+            }
+        // eslint-disable-next-line
+        },[])
+}
+
     function UpdateData(newData) {
-        if (uid !== '' && newData.id){            
+        if (uid !== '' && newData.id) {
             update(ref(db, 'books/users/' + uid + '/' + newData.id), newData)
-            .then(setRender(!render))
+                .then(setRender(!render))
         }
     }
-    
 
-    function DeleteData(item){
+
+    function DeleteData(item) {
         console.log(item.id)
-        remove(ref(db,'books/users/'+uid+'/'+item.id))
-        .then(()=> setRender(!render))
-        .catch(err=>console.log(err));
+        remove(ref(db, 'books/users/' + uid + '/' + item.id))
+            .then(() => setRender(!render))
+            .catch(err => console.log(err));
     }
 
-    return { WriteData, ReadData, UpdateData, DeleteData, loading };
+    return { WriteData, ReadData, UpdateData, DeleteData, LoginData, loading };
 }
 export default useData;
