@@ -12,11 +12,11 @@ const Main = ()=>{
     const { user } = userData;
     return(
         <div className="containerMain">
-            <div className="recommended">
                 <div className="text">
                     <p>Recommended by our librarians</p>
-                    <p>View More</p>
+                    <span>View More</span>
                 </div>
+            <div className="recommended">
                 <div className="cards">
                     <Cards/>
                 </div>
@@ -47,10 +47,7 @@ const Main = ()=>{
                     <h3><GiSevenPointedStar/> Collections</h3>
                     <p>Books</p>
                     <p>E-books &#38;Audiobooks</p>
-                    <p>Movies</p>
-                    <p>Music &#38;Recordings</p>
                     <p>Periodicals</p>
-                    <p>Images</p>
                     <p>Braile &#38;Talking Books</p>
                 </div>
                 <div className="location">
