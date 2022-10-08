@@ -11,6 +11,7 @@ const Cards = () => {
   const { handlerDownload, HandlerLikes, handlerDelete, HandlerData } = useCardFunctions();
   const data = HandlerData();
   const [loading, setLoading] = useState(true);
+  // const [ imageBackground, setImageBackground] = useState(false);
 
 useEffect(()=>{
   data.length !== 0 && setLoading(false);
@@ -24,22 +25,24 @@ useEffect(()=>{
         data?.map((res) => (
           <div className="card" key={res.id}>
             <div className="icons">
-              <div>
+              <div className='avalible'>
                 { res.avalible ? <BsFillBookmarkStarFill className="avalible"/> 
                                           : <BsBookmarkXFill className="unavalible"/>}
               </div>
               <div>
-                <FaDownload onClick={()=> handlerDownload(res,'download')} className={res.download ? 'download' : 'undownload'}/>
+                <FaDownload onClick={()=> handlerDownload(res,'download')} className={res.download ? 'download' : ''}/>
                 <div className="likes">
                   { res.like ? <AiTwotoneLike onClick={()=>HandlerLikes(res)} className="like" /> 
-                                        : <AiOutlineLike onClick={()=>HandlerLikes(res)} className="dislike"/>}
+                                        : <AiOutlineLike onClick={()=>HandlerLikes(res)}/>}
                 </div>
-                <AiFillDelete onClick={()=>handlerDelete(res)} style={{color:'red'}}/>
+                <AiFillDelete onClick={()=>handlerDelete(res)}/>
               </div>
             </div>
-            <img src={res.img} alt={res.name} />
+            <img /* onClick={()=>setImageBackground(!imageBackground)} className={imageBackground ? 'imageBackground' : ''} */ src={res.img} alt={res.name} />
+            <div className="textCard">
             <p>{res.name}</p>
-            <p>{res.autor}</p>
+            <span>{res.autor}</span>
+            </div>
           </div>
         ))
       )}

@@ -1,75 +1,122 @@
+/* Cards container */
 .cardsContainer{
     width: 100%;
-    height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-flow: row wrap;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    grid-template-rows: masonry;
     gap: 1rem;
+    align-self: center;
+    justify-items: center;
 
+    /* Card */
     .card{
-        width: 300px;
-        flex-grow: 1;
-        aspect-ratio: 1/1;
+        width: 250px;
+        height: 350px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-flow: column;
         position: relative;
-        :nth-child(2) {
-            font-size: 1.3rem;
-            padding: .3rem;
-        }
 
+        background: rgba(107, 103, 103, 0.25);
+        backdrop-filter: blur( 6.5px );
+        -webkit-backdrop-filter: blur( 6.5px );
+        border-radius: 10px;
+        border: 1px solid rgba( 255, 255, 255, 0.18 );
+
+    /* Icons */
     .icons{
-        background-color: #0009;
         width: 90%;
-        height: 3rem;
         position: absolute;
-        top: 0;
+        top: 2%;
+        
         display: flex;
         align-items: center;
-        justify-content: space-around;
-        padding: 0 1rem;
+        justify-content: space-between;
+        padding: 0 .5rem;
+
+        background: rgba(255, 255, 255, 0.425);
+        box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+        backdrop-filter: blur( 9px );
+        border-radius: 10px;
+        -webkit-backdrop-filter: blur( 9px );
+
         div{
-            width: 100%;
             display: flex;
+            width: 50%;
+            height: 2.5rem;
+            justify-content: center;
             align-items: center;
+            font-size: 1.5rem;
+            color: #1f1e1ed0;
         }
-
-        div:nth-child(2){
-            justify-content: space-around;
-        }
-        .download{
-            color: #fd0000b7;
-        } 
-        .undownload{
-            color: #f5f5f58f;
-        }
-
-        .like{
-            color: #09ff00b6;
-        }
-        .dislike{
-            color: #f5f5f58f;
-        }
+        
         .avalible{
-            color: #fcd7058f;
+            justify-content: flex-start;
+            padding-left: .5rem;
+            font-size: 3rem;
+            .avalible{
+                color: #fcba05cb;
+            }
+            .unavalible{
+                color: #ff8800d3;
+            }
         }
-        .unavalible{
-            color: #fc0505b7;
+
+        .download{
+            color: #df0303b7;
+        } 
+        .like{
+            color: #12eafa;
         }
-        svg{
-        font-size: 2.5rem;
+    }
+    .textCard{
+     display: flex;
+     flex-direction: column;
+     width: 90%;
+     height: fit-content;
+     padding: 1rem 0;
+     p{
+        font-size: 1rem;
+        text-align: center;
+        width: 100%;
+        }
+        span{
+            text-shadow: 0 0 10px #12eafa;
+            width: 95%;
+            padding-top: 3%;
+            text-align: right;
+            font-size: .8rem;
+            &::before{
+            content: "\25b9";
+            padding-right: 2%;
+            }
         }
     }
     
+    /* Image */
     img{
-
-        width: 90%;
-        height: 80%;
+        width: 80%;
+        height: 70%;
         object-fit: fill;
     }
     
+    .imageBackground{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    }
+}
+
+/* Media Querys */
+@media (max-width: 850px) {
+    .cardsContainer{
+        .card{
+            width: 200px;
+            height: 300px;
+        }
     }
 }
