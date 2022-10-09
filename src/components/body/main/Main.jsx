@@ -6,10 +6,23 @@ import { MdLocationOn } from 'react-icons/md';
 import Cards from '../../card/Cards';
 import { Link } from 'react-router-dom';
 import { Auth } from '../../../context/Context';
+import { useEffect } from 'react';
 
 const Main = ()=>{
     const { userData } = Auth();
     const { user } = userData;
+
+    useEffect(()=>{
+        document.querySelectorAll('.more p').forEach(el => {
+            el.addEventListener('click', ()=>{
+                el.classList.add('focus')
+                setTimeout(()=>{
+                    el.classList.remove('focus')
+                },1000);
+            })
+        });
+    },[])
+
     return(
         <div className="containerMain">
                 <div className="text">
@@ -38,7 +51,7 @@ const Main = ()=>{
                 </div>
                 <div className="news">
                     <h3><BsFillStarFill/> New &#38; Notable </h3>
-                    {user !== '' && <Link to={'/addBook'}>Add book</Link>}
+                    <Link to={'/addBook'}>Add book</Link>
                     <p>New titles</p>
                     <p>Award Winners</p>
                     <p>Bestellers</p>
@@ -46,9 +59,9 @@ const Main = ()=>{
                 <div className="collections">
                     <h3><GiSevenPointedStar/> Collections</h3>
                     <p>Books</p>
-                    <p>E-books &#38;Audiobooks</p>
+                    <p>E-books &#38; Audiobooks</p>
                     <p>Periodicals</p>
-                    <p>Braile &#38;Talking Books</p>
+                    <p>Braile &#38; Talking Books</p>
                 </div>
                 <div className="location">
                     <h3> <MdLocationOn/> Location</h3>

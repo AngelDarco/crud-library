@@ -50,12 +50,38 @@
         display: flex;
         flex-direction: column;
 
+        .focus{
+            color: red;
+            &::before{
+                content: 'not implemented yet';
+                color: #0f0;
+                display: block;
+                position: absolute;
+                top: 0%;
+                text-shadow: 0 0 5px #ffffff;
+                background-color: #000000b9;
+                border-radius: 10px;
+                padding: 2% 5%;
+            }
+        }
+
         div{
             padding: 2% 5%;
+            position: relative;
+            a{
+                text-decoration: none;
+                color: var(--color);
+                &:hover{
+                    text-shadow: 0 0 5px #fdf906;
+                } 
+            }
             p{
+                cursor: pointer;
                 padding: 5% 0;
                 border-bottom: 1px solid #555;
-                
+                &:hover{
+                    text-shadow: 0 0 10px #555;
+                }                
             }
             svg{
                 color: #2ddb4a; 
@@ -85,6 +111,7 @@
             input{
                 border: none;
                 width: 90%;
+                outline: none;
             }
             svg{
             color: #000;

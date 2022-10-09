@@ -21,15 +21,17 @@ const Header = () => {
         <span>
           <BsFillBookmarkFill className="bookmark" />
         </span>
-        <h1>Public Library</h1>
+        <Link to={'/'}> <h1>Public Library </h1></Link> 
       </div>
       <div className={!menu ? "navbar active" : "navbar"}>
         <ul className={menu ? "hide" : ""}>
           <Link to={"/"}>Home</Link>
-          <Link to={"/about"}>About</Link>
-          <Link to={"/books"}>Books</Link>
-          <Link to={"/events"}>Events</Link>
-          <Link to={"/contacts"}>Contacts</Link>
+          <Link to={"/addBook"}>Add Book</Link>
+          { !user && <Link to={"/register"}>Register</Link> }
+          { !user  ? 
+                    <Link className="session" to={'/login'}>Log In</Link>
+                    :
+                    <Link className="session" to={'/logout'}>Log Out</Link>  }
         </ul>
         <div onClick={() => setMenu(!menu)} className="menu">
           {menu ? (
