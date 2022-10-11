@@ -1,42 +1,59 @@
-import './Register.scss';
+import "./Register.scss";
 import { useState } from "react";
-import RegisterAuth from './RegisterAuth';
-import { Auth } from '../../../context/Context';
-import Main from '../../body/main/Main';
-import { Link } from 'react-router-dom';
+import useSession from "../../hooks/session/useSession";
 
 const Register = () => {
-    const [usersData, setUsersData] = useState({})
+    const { Register } = useSession();
+    const [userData, setUserData] = useState({});  
 
-    const { userData } = Auth()
-    const { uid } = userData;
-
-    const handlerInput = ({ target }) => {
-        setUsersData({ ...usersData, [target.name]: target.value });
-    }
-    const handlerSubmit = (event) => {
-        event.preventDefault();
-        RegisterAuth(usersData);
-    }
+    const handlerInput = ({ target: { name, value } }) => setUserData({ ...userData, [name]: value })
+  
+    const LogIn = (e) => {
+      e.preventDefault();
+      const { error, message } = Register(userData);
+        console.log(error, message)
+    };
 
     return (
-        <>
-            { 
-                 uid !== ''
-                ? <Main/> : 
-                <div className="registerContainer">
-                    <h1>Log Up</h1>
-                    <form onSubmit={(e) => handlerSubmit(e)}>
-                        <label htmlFor="email">email</label>
-                        <input onChange={(e) => handlerInput(e)} type="email" name="email" id="email" />
-                        <label htmlFor="pass">pass</label>
-                        <input onChange={(e) => handlerInput(e)} type="password" name="pass" id="pass" />
-                        <button type="submit">Log Up</button>
-                        <button className='login'><Link to='/login'>Login</Link></button>
-                    </form>
-                </div>
-            }
-        </>
-    )
-}
+    <div className="registerContainer">
+      <h1>Register</h1>
+      <form >
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            onChange={(e) => handlerInput(e)}
+            placeholder="Email"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="pass">Password</label>
+          <input
+          id="pass"
+            type="password"
+            min={6}
+            name="pass"
+            onChange={(e) => handlerInput(e)}
+            placeholder="Password"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="pass">Repit Password</label>
+          <input
+            type="password"
+            min={6}
+            name="pass2"
+            onChange={(e) => handlerInput(e)}
+            placeholder="Password"
+            required
+          />
+        </div>
+        <button onClick={(e) => LogIn(e)} type="submit" value="Sign Up" className="register">Sent </button>
+      </form>
+    </div>
+  );
+};
 export default Register;
