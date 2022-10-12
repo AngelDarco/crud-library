@@ -33,6 +33,7 @@
             align-items: center;
             justify-content: center;
             input {
+                outline: none;
                 width: 50%;
                 height: 2rem;
                 padding: 0 1rem;
@@ -55,6 +56,12 @@
             a {
                 text-decoration: none;
             }
+        }
+        span{
+            color: red;
+        }
+        .error{
+            border: 1px solid red;
         }
     }
 }
