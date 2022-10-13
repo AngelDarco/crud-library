@@ -6,10 +6,7 @@ import uuid from 'react-uuid';
 import { useState, useEffect, useCallback } from 'react';
 
 const useData = () => {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [render, setRender] = useState(false);
-
     const db = getDatabase();
     const { userData } = Auth();
     const { uid } = userData;
@@ -54,76 +51,73 @@ const useData = () => {
         )
     }
 
-
     function ReadData() {
+        const [user, setUser] = useState([]);
+        const [publics, setPublics] = useState([]);
 
-         useEffect(() => {
-            uid ? 
-            (async()=>{
-                await
+        const pub = () => {
+            return new Promise(resolve => {
+                onValue(ref(db, 'books/public/'), snapshot => {
+                    const database = snapshot.val();
+                    let arr = [];
+                    if (database !== null) {
+                        Object.values(database).map(db => {
+                            arr.push(db);
+                        })
+                        resolve(arr)
+                    }else resolve([])
+                })
+            })
+        }
+
+        const usr = () => {
+            if(!userData.uid) return new Promise(res=>res([]));
+            return new Promise(resolve => {
                 onValue(ref(db, 'books/users/' + uid), snapshot => {
                     const database = snapshot.val();
                     let arr = [];
                     if (database !== null) {
                         Object.values(database).map(db => {
-                            arr.push(db);
+                            arr.push(db)
                         })
-                    }
-                    if(arr.length !== 0)
-                        setData(arr)
-                        setLoading(false)
+                        resolve(arr)
+                    }else resolve([])
                 })
-            }) () 
-            :
-            (async()=>{
-                await
-                onValue(ref(db, 'books/public/'), snapshot => {
-                    const database = snapshot.val();
-                    let arr = [];
-                    if (database !== null) {
-                        Object.values(database).map(db => {
-                            arr.push(db);
-                        })
-                    }
-                    if(arr.length !== 0)
-                        setData(arr)
-                        setLoading(false)
-                })
-            }) () 
+            })
+        }
+
+        useEffect(() => {
+            (async () => {
+                await usr().then(res => setUser(res))
+                await pub().then(res => setPublics(res))
+            })();
             //eslint-disable-next-line
         }, [render])
 
-        if(data.length >= 1 ){
-            if(data[0].id)
-                return data
-            else {
-                return Object.values(data[0])}
-        }
-    } //end method 
+        return { user, publics }
+    }
 
-
-
-    function LoginData(){
-    useCallback(()=>{
-        if(uid){
-               (async()=>{
-                await
-                onValue(ref(db, 'books/public/'), snapshot => {
-                    const database = snapshot.val();
-                    if (database !== null) {
-                        Object.values(database).map(data => {
-                           (async()=>{
-                                await
-                                set(ref(db,`books/users/${uid}/${data.id}`),data)
-                           })()
+    function LoginData() {
+        useCallback(() => {
+            if (uid) {
+                (async () => {
+                    await
+                        onValue(ref(db, 'books/public/'), snapshot => {
+                            const database = snapshot.val();
+                            if (database !== null) {
+                                Object.values(database).map(data => {
+                                    (async () => {
+                                        await
+                                            set(ref(db, `books/users/${uid}/${data.id}`), data)
+                                    })()
+                                })
+                            }
                         })
-                    }
-                })
                 })()
             }
-        // eslint-disable-next-line
-        },[])
-}
+            // eslint-disable-next-line
+        }, [])
+    }
 
     function UpdateData(newData) {
         if (uid !== '' && newData.id) {
@@ -132,14 +126,16 @@ const useData = () => {
         }
     }
 
-
-    function DeleteData(item) {
-        console.log(item.id)
+    function DeleteData(item,pub=false) {
         remove(ref(db, 'books/users/' + uid + '/' + item.id))
+            .then(() => setRender(!render))
+            .catch(err => console.log(err));
+        if(pub)
+            remove(ref(db, 'books/public/'+ item.id))
             .then(() => setRender(!render))
             .catch(err => console.log(err));
     }
 
-    return { WriteData, ReadData, UpdateData, DeleteData, LoginData, loading };
+    return { WriteData, ReadData, UpdateData, DeleteData, LoginData };
 }
 export default useData;
