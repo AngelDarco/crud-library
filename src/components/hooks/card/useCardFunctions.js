@@ -109,8 +109,6 @@ const useCardFunctions = () => {
        alert('error','Sorry, You must log first', 1500)
         return
     }
-    console.log(uid)
-    console.log(itm.owner)
       itm.owner === uid ?
       (DeleteData(itm,true), alert('success','deleted',1000))
       : alert('warning','You just can delete your books', 1500)
