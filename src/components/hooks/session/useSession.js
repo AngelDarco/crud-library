@@ -1,23 +1,19 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from 'react';
 import { auth } from '../../../fbConfig/firebase-config';
 
 
 const useSession = ()=>{
-    const [ message, setMessage ] = useState({});
-    const Register = ({email, pass})=>{
-    
-        createUserWithEmailAndPassword(auth, email, pass)
-            .then( credentials => {
-                console.log(credentials)
-                setMessage({error: false, message: 'success'})
+    const Register = async ({email, pass})=>{
+        return new Promise(resolve => {
+         createUserWithEmailAndPassword(auth, email, pass)
+            .then(() => {
+                resolve({error:false})
             })
             .catch(err => {
-                console.log(err)
-                setMessage({error: true, message: err.message})
+                resolve({error:true,message:err.message})
             })
-            return message
+        })
         }
 
         const Login = ()=>{
@@ -38,7 +34,6 @@ const useSession = ()=>{
         }
             return LoginAuth
         }
-
         return { Register, Login }
 }
 export default useSession;
