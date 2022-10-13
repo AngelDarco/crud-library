@@ -1,6 +1,5 @@
 import './Login.scss';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Auth } from '../../../context/Context';
 import Main from '../../body/main/Main';
 import useSession from '../../hooks/session/useSession';
@@ -41,7 +40,6 @@ const Login = ()=>{
               })
 
         })
-        .catch(err=> console.log(err))
     }
 
     return (
@@ -55,14 +53,13 @@ const Login = ()=>{
             <form onSubmit={(e)=> handlerSubmit(e)}>
                 <div>
                 <label htmlFor="email">email</label>
-                <input onChange={(e)=>handlerInput(e)} type="email" name="email" id="email" />
+                <input onChange={(e)=>handlerInput(e)} type="email" name="email" id="email" required/>
                 </div>
                 <div>
                 <label htmlFor="pass">pass</label>
-                <input onChange={(e)=>handlerInput(e)} type="password" name="pass" id="pass" />
+                <input onChange={(e)=>handlerInput(e)} type="password" name="pass" id="pass" min={6} required/>
                 </div>
-                <button className='register' type="submit">Login</button>
-                <button className='register'><Link to='/register'>Log Up</Link></button>
+                <input className='register' type="submit"/>
             </form>
         </div>
         }
