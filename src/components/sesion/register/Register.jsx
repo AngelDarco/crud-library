@@ -25,7 +25,6 @@ const Register = () => {
       pass.current.addEventListener('keyup',()=>{
         if(pass.current.value.length < 6){
         if(pass.current.value.length === 0 ){
-          console.log(pass.current.value.length === 0)
           setPassError({error:true, message: "This field can't be empty"})
           setButton(true)
           return
@@ -64,7 +63,7 @@ const Register = () => {
     return (
     <div className="registerContainer">
       <h1>Register</h1>
-      <form >
+      <form onSubmit={(e) => LogIn(e)}>
         <div>
           <label htmlFor="email">Email</label>
           <input
@@ -74,6 +73,7 @@ const Register = () => {
             name="email"
             onChange={(e) => handlerInput(e)}
             placeholder="Email"
+            required
             className={emailError ? 'error' : ''}
           />
         </div>
@@ -89,10 +89,11 @@ const Register = () => {
             name="pass"
             onChange={(e) => handlerInput(e)}
             placeholder="Password"
+            required
           />
         </div>
         { passError?.error ? <span>{passError?.message}</span> : ''}
-        <input disabled={button} onClick={(e) => LogIn(e)} type="submit" value="Sign Up" className="register" />
+        <input disabled={button}  type="submit" value="Sign Up" className="register" />
       </form>
     </div>
   );
