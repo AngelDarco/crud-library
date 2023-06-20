@@ -6,6 +6,7 @@
 
 .container{
   width: 100%;
+  min-width: 400px;
   height: fit-content;
   background-color: #e2dddd;
 }
