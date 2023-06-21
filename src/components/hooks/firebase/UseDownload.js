@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 const useDownload = ()=>{
     const storage = getStorage();
-    const fileRef = ref(storage,'Pdf/DarcoResume.docx');
+    const fileRef = ref(storage,'Pdf/DarcoResume.pdf');
     const [ url, setUrl ] = useState('');
 
     useEffect(()=>{
