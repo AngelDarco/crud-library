@@ -18,12 +18,16 @@ useEffect(()=>{
 
   return (
     <div className="cardsContainer">
-      {loading ? (
+      { loading ? (
         <CirclesWithBar 
-          width="100"
-          height="100"
-          visible={true}
-
+          width="200"
+          height="200"
+          wrapperStyle={{
+            position: "absolute",
+            top: "50%",
+            left: "35%",
+            transform: "translate(-50%, -50%)",
+          }}
         />
 ) : (
         data?.map((res) => (

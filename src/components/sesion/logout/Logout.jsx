@@ -2,7 +2,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../../fbConfig/firebase-config";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import Loading from "../../assets/loading/Loading";
+import { CirclesWithBar } from "react-loader-spinner";
 
 const Logout = ()=>{
     const navigate = useNavigate();
@@ -20,7 +20,16 @@ const Logout = ()=>{
             }, 1000);
         },[]);
     return(
-        <Loading/>
+        <CirclesWithBar
+        width="200"
+          height="200"
+          wrapperStyle={{
+            position: "absolute",
+            top: "50%",
+            left: "35%",
+            transform: "translate(-50%, -50%)",
+          }}
+      />
     )
 }
 export default Logout;
