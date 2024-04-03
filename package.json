@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "firebase deploy --only hosting:darco-library"
+    "deploy": "vite build && firebase deploy",
+    "firebase:preview": "firebase hosting:channel:deploy darco-library"
   },
   "dependencies": {
     "react": "^17.0.2",
