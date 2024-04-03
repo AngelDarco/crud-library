@@ -15,7 +15,6 @@ const firebaseConfig = {
   // Real time Database
   databaseURL: import.meta.env.VITE_DATABASE_NAME,
 };
-
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
