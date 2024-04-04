@@ -7,12 +7,9 @@ import { CgCloseO } from "react-icons/cg";
 import { useContext, useState } from "react";
 
 const Header = () => {
-  const { userData } = useContext(context);
+  const { user } = useContext(context);
   const [menu, setMenu] = useState(true);
 
-  if (!userData || !userData.uid || !userData.user) return null;
-
-  const { user } = userData;
   const userName = user.split("@")[0];
 
   return (

@@ -6,8 +6,7 @@ import useSession from "../../hooks/session/useSession";
 import Swal from "sweetalert2";
 
 const Login = () => {
-  const { userData, setUserData } = useContext(context);
-  const { uid } = userData;
+  const { uid, setUserData } = useContext(context);
   const { Login } = useSession();
   const LoginAuth = Login();
   const [usersData, setUsersData] = useState({});
