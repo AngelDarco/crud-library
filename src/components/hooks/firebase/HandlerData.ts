@@ -1,3 +1,43 @@
+import { get, getDatabase, ref } from "firebase/database";
+import { useContext } from "react";
+import { context } from "../../../context/Context";
+
+export default class HandlerData {
+  db: any;
+  uid: string;
+
+  constructor() {
+    const { uid } = useContext(context);
+
+    this.db = getDatabase();
+    this.uid = uid;
+  }
+  // Read the stored books data from firebase
+  async ReadData() {
+    try {
+      const publicSnapshot = await get(ref(this.db, "books/public/"));
+      const usersSnapshots = await get(ref(this.db, "books/users/"));
+
+      let usersData = {};
+      Object.values(usersSnapshots.val()).forEach((users: any) => {
+        usersData = { ...usersData, ...users };
+      });
+
+      const allData = { ...publicSnapshot.val(), ...usersData };
+
+      const userSnapshot = await get(ref(this.db, "books/users/" + this.uid));
+      const userData = userSnapshot.val();
+
+      return { publicData: allData, userData };
+    } catch (error) {
+      console.error("Error reading data:", error);
+      throw error;
+    }
+  }
+}
+
+/*
+
 import {
   getDatabase,
   ref,
@@ -19,10 +59,11 @@ import uuid from "react-uuid";
 import { useState, useEffect, useCallback, useContext } from "react";
 import { UserValue, WriteData } from "../../../types";
 
-const useData = () => {
+ const useData = () => {
   const [render, setRender] = useState(false);
   const db = getDatabase();
   const { uid } = useContext(context);
+
   function WriteData({ autor, name, img }: WriteData) {
     if (!autor || !name || !img) throw new Error("All fields are required");
     const key = uuid();
@@ -118,4 +159,4 @@ const useData = () => {
 
   return { WriteData, ReadData, UpdateData, DeleteData, LoginData };
 };
-export default useData;
+export default useData; */
