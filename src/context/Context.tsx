@@ -8,10 +8,11 @@ const userValue: UserValue = {
   user: "",
 };
 
-const context = createContext(userValue);
+export const context = createContext(userValue);
 
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
-  const [userData, setUserData] = useState(userValue);
+  const data = useContext(context);
+  const [userData, setUserData] = useState(data);
 
   useEffect(() => {
     (() => {
@@ -35,8 +36,4 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
       {children}
     </context.Provider>
   );
-};
-
-export const Auth = () => {
-  return useContext(context);
 };
