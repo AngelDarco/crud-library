@@ -3,7 +3,6 @@ import "sweetalert2/src/sweetalert2.scss";
 import { FaDownload } from "react-icons/fa";
 import { BsFillBookmarkStarFill, BsBookmarkXFill } from "react-icons/bs";
 import { AiOutlineLike, AiTwotoneLike, AiFillDelete } from "react-icons/ai";
-import useCardFunctions from "../hooks/card/useCardFunctions";
 import { useState, useEffect, useContext } from "react";
 import { CirclesWithBar } from "react-loader-spinner";
 
@@ -12,15 +11,6 @@ import HandlerData from "../hooks/firebase/HandlerData";
 import { context } from "../../context/Context";
 
 const Cards = () => {
-  /*   const { handlerDownload, HandlerLikes, handlerDelete, HandlerData } =
-    useCardFunctions();
-  const data = HandlerData();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    data.length !== 0 && setLoading(false);
-  }, [data]); */
-
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(undefined);
   const { uid } = useContext(context);
@@ -86,7 +76,7 @@ const Cards = () => {
                     <AiOutlineLike onClick={() => actions.HandlerLikes(res)} />
                   )}
                 </div>
-                {/* <AiFillDelete onClick={() => handlerDelete(res)} /> */}
+                <AiFillDelete onClick={() => actions.HandlerDelete(res)} />
               </div>
             </div>
             <img src={res.img} alt={res.name} />

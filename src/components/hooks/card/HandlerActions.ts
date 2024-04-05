@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Data } from "../../../types";
 import { context } from "../../../context/Context";
-import Swal from "sweetalert2";
+import Swal, { SweetAlertOptions } from "sweetalert2";
 // import useDownload from "../firebase/UseDownload";
 import HandlerData from "../firebase/HandlerData";
 
@@ -56,7 +56,7 @@ export default class HandlerActions {
       title,
       showConfirmButton: false,
       timer,
-    } as any);
+    } as SweetAlertOptions);
   }
 
   async handlerDownload(res: Data) {
@@ -110,5 +110,15 @@ export default class HandlerActions {
     !data.like
       ? this.alert("success", "Like", 500, "top-right")
       : this.alert("warning", "Unlike", 500, "top-right");
+  }
+
+  HandlerDelete(itm: Data) {
+    if (this.uid === "") {
+      this.alert("error", "Sorry, You must log first", 1500);
+      return;
+    }
+    this.uid === itm.owner
+      ? (this.data.DeleteData(itm.id), this.alert("success", "deleted", 1000))
+      : this.alert("warning", "You just can delete your books", 1500);
   }
 }

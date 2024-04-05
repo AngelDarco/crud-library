@@ -123,16 +123,19 @@ export default class HandlerData {
     return new Error("Something went wrong updating the data");
   }
 
-  async DeleteData(item: UserValue, pub = false) {
-    let res = "";
-    await remove(ref(this.db, "books/users/" + this.uid + "/" + item.uid))
-      .then(() => (res = "done"))
-      .catch((err) => console.log(err));
-    if (pub)
-      await remove(ref(this.db, "books/public/" + item.uid))
-        .then(() => (res = "done"))
+  async DeleteData(bookId: string, admin = false) {
+    // admin can delete all books
+    if (admin)
+      await remove(ref(this.db, "books/public/" + bookId))
+        .then(() => "done")
         .catch((err) => console.log(err));
-    return res;
+
+    return await remove(ref(this.db, "books/users/" + this.uid + "/" + bookId))
+      .then(() => "done")
+      .catch((err) => {
+        console.error(err);
+        throw new Error(err);
+      });
   }
 
   async Download() {
