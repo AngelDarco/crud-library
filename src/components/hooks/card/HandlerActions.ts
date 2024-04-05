@@ -1,12 +1,18 @@
 import { useContext } from "react";
-import { Data, UserValue } from "../../../types";
+import { Data } from "../../../types";
 import { context } from "../../../context/Context";
+import Swal from "sweetalert2";
+// import useDownload from "../firebase/UseDownload";
+import HandlerData from "../firebase/HandlerData";
 
 type DataKeys = "userData" | "publicData";
 type StoreData = {
   [key in DataKeys]: { [key: string]: Data };
 };
+
+// useCardFunctions replacement
 export default class HandlerActions {
+  uid: string;
   constructor() {
     /*   const { userData } = useContext(context);
   const { UpdateData, DeleteData, ReadData } = useData();
@@ -16,6 +22,8 @@ export default class HandlerActions {
   if (!userData || !userData.uid) return null;
   const { uid } = userData; */
     // this.data = data;
+    const { uid } = useContext(context);
+    this.uid = uid;
   }
 
   async handlerAllData(data: StoreData) {
@@ -32,6 +40,62 @@ export default class HandlerActions {
     });
 
     return arr;
+  }
+
+  private alert(
+    icon: string,
+    title: string,
+    timer: number,
+    position = "center"
+  ) {
+    Swal.fire({
+      position,
+      icon,
+      title,
+      showConfirmButton: false,
+      timer,
+    });
+  }
+
+  async handlerDownload(res: Data) {
+    const data = new HandlerData(res.id);
+    const file = await data.Download();
+    if (typeof this.uid !== "string" || this.uid === "")
+      return this.alert("error", "Sorry, You must log first", 1000, "center");
+
+    if (!file || typeof file !== "string")
+      return this.alert(
+        "error",
+        "Sorry, something went wrong internal",
+        1000,
+        "center"
+      );
+
+    // check if already downloaded
+    if (res.download) {
+      Swal.fire({
+        title: "Want download again?",
+        text: "You want download this file again!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Download",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.alert("success", "Downloading ...", 500, "center");
+          window.open(file);
+        }
+      });
+      return;
+    }
+
+    await data.UpdateData({ ...res, download: true }).then((res) => {
+      if (res === "done") {
+        this.alert("success", "Downloaded", 200, "center");
+        window.open(file);
+      } else this.alert("error", res as string, 1000, "center");
+    });
   }
 }
 

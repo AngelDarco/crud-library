@@ -4,11 +4,12 @@ import { FaDownload } from "react-icons/fa";
 import { BsFillBookmarkStarFill, BsBookmarkXFill } from "react-icons/bs";
 import { AiOutlineLike, AiTwotoneLike, AiFillDelete } from "react-icons/ai";
 import useCardFunctions from "../hooks/card/useCardFunctions";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { CirclesWithBar } from "react-loader-spinner";
 
 import HandlerActions from "../hooks/card/HandlerActions";
 import HandlerData from "../hooks/firebase/HandlerData";
+import { context } from "../../context/Context";
 
 const Cards = () => {
   /*   const { handlerDownload, HandlerLikes, handlerDelete, HandlerData } =
@@ -22,26 +23,28 @@ const Cards = () => {
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(undefined);
+  const { uid } = useContext(context);
 
   // retrieve data from firebase
-  const dataHandler = new HandlerData();
+  const dataHandler = new HandlerData(uid);
 
   // give the interaction buttons functionality
   const actions = new HandlerActions();
 
   // pass the data to the interaction buttons class
-  useEffect(() => {
-    (async () => {
-      const retrievedData = await actions.handlerAllData(
-        dataHandler.ReadData()
-      );
-      const allData = [];
-      retrievedData.forEach((value) => allData.push(value));
+  async function getData() {
+    const allData = [];
+    const retrievedData = await actions.handlerAllData(dataHandler.ReadData());
+    retrievedData.forEach((value) => allData.push(value));
+    return allData;
+  }
 
-      setLoading(false);
-      setData(allData);
-    })();
+  useEffect(() => {
+    setLoading(false);
+    getData().then((res) => setData(res));
   }, []);
+
+  console.log("rendering ...");
 
   return (
     <div className="cardsContainer">
@@ -68,12 +71,12 @@ const Cards = () => {
                   <BsBookmarkXFill className="unavalible" />
                 )}
               </div>
-              {/* <div>
+              <div>
                 <FaDownload
-                  onClick={() => handlerDownload(res, "download")}
+                  onClick={() => actions.handlerDownload(res, "download")}
                   className={res.download ? "download" : ""}
                 />
-                <div className="likes">
+                {/*<div className="likes">
                   {res.like ? (
                     <AiTwotoneLike
                       onClick={() => HandlerLikes(res)}
@@ -83,8 +86,8 @@ const Cards = () => {
                     <AiOutlineLike onClick={() => HandlerLikes(res)} />
                   )}
                 </div>
-                <AiFillDelete onClick={() => handlerDelete(res)} />
-              </div> */}
+                <AiFillDelete onClick={() => handlerDelete(res)} />*/}
+              </div>
             </div>
             <img src={res.img} alt={res.name} />
             <div className="textCard">
