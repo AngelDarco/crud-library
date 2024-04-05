@@ -1,14 +1,23 @@
-import { get, getDatabase, ref } from "firebase/database";
-import { useContext } from "react";
-import { context } from "../../../context/Context";
+import {
+  Database,
+  get,
+  getDatabase,
+  set,
+  ref,
+  onValue,
+  update,
+  remove,
+} from "firebase/database";
+import { ref as storageRef } from "firebase/storage";
+import { Data, UserValue, WriteData } from "../../../types";
+import uuid from "react-uuid";
+import { getDownloadURL, getStorage, uploadBytes } from "firebase/storage";
 
 export default class HandlerData {
-  db: any;
+  db: Database;
   uid: string;
 
-  constructor() {
-    const { uid } = useContext(context);
-
+  constructor(uid: string) {
     this.db = getDatabase();
     this.uid = uid;
   }
@@ -19,9 +28,11 @@ export default class HandlerData {
       const usersSnapshots = await get(ref(this.db, "books/users/"));
 
       let usersData = {};
-      Object.values(usersSnapshots.val()).forEach((users: any) => {
-        usersData = { ...usersData, ...users };
-      });
+      Object.values(usersSnapshots.val() as Record<string, UserValue>).forEach(
+        (users) => {
+          usersData = { ...usersData, ...users };
+        }
+      );
 
       const allData = { ...publicSnapshot.val(), ...usersData };
 
@@ -34,59 +45,31 @@ export default class HandlerData {
       throw error;
     }
   }
-}
 
-/*
-
-import {
-  getDatabase,
-  ref,
-  set,
-  onValue,
-  update,
-  remove,
-  get,
-} from "firebase/database";
-import {
-  getStorage,
-  uploadBytes,
-  ref as storageRef,
-  getDownloadURL,
-} from "firebase/storage";
-import { context } from "../../../context/Context";
-import uuid from "react-uuid";
-
-import { useState, useEffect, useCallback, useContext } from "react";
-import { UserValue, WriteData } from "../../../types";
-
- const useData = () => {
-  const [render, setRender] = useState(false);
-  const db = getDatabase();
-  const { uid } = useContext(context);
-
-  function WriteData({ autor, name, img }: WriteData) {
+  async WriteData({ autor, name, img }: WriteData) {
     if (!autor || !name || !img) throw new Error("All fields are required");
     const key = uuid();
-    const loadImg = () => {
+    const loadImg = async () => {
       const storage = getStorage();
       const refImg = storageRef(storage, "Books/" + key + img.name);
-      return new Promise((resolve, reject) =>
-        uploadBytes(refImg, img)
-          .then((snapshot) => {
-            getDownloadURL(
-              storageRef(storage, snapshot.metadata.fullPath)
-            ).then((link) => {
-              resolve(link);
-            });
-          })
-          .catch((err) => reject(err.message))
-      );
+      await uploadBytes(refImg, img)
+        .then((snapshot) => {
+          getDownloadURL(storageRef(storage, snapshot.metadata.fullPath)).then(
+            (link) => {
+              return link;
+            }
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          return `${err.message}`;
+        });
     };
 
     return new Promise((resolve, reject) =>
       loadImg()
-        .then((res) => {
-          set(ref(db, "books/public/" + key), {
+        .then((res) =>
+          set(ref(this.db, `books/public/${key}`), {
             id: key,
             autor,
             name,
@@ -94,69 +77,77 @@ import { UserValue, WriteData } from "../../../types";
             avalible: true,
             download: false,
             like: false,
-            owner: uid,
+            owner: this.uid,
           })
             .then(() => resolve("done"))
-            .catch((err) => reject(new Error(err.message)));
-        })
+            .catch((err) => reject(new Error(err.message)))
+        )
         .catch((err) => reject(new Error(err.message)))
     );
   }
 
-  // Read the stored books data from firebase
-  async function ReadData() {
-    try {
-      const publicSnapshot = await get(ref(db, "books/public/"));
-      const publicData = publicSnapshot.val();
-
-      const userSnapshot = await get(ref(db, "books/users/" + uid));
-      const userData = userSnapshot.val();
-
-      return { publics: publicData, user: userData };
-    } catch (error) {
-      console.error("Error reading data:", error);
-      throw error;
-    }
-  }
-
-  function LoginData() {
-    useCallback(() => {
-      if (uid) {
-        (async () => {
-          await onValue(ref(db, "books/public/"), (snapshot) => {
-            const database = snapshot.val();
-            if (database !== null) {
-              Object.values(database).map((data) => {
-                (async () => {
-                  await set(ref(db, `books/users/${uid}/${data.id}`), data);
-                })();
-              });
-            }
+  async LoginData() {
+    let res = "";
+    if (this.uid) {
+      onValue(ref(this.db, "books/public/"), (snapshot) => {
+        const database = snapshot.val();
+        if (database !== null) {
+          Object.values(database as Record<string, Data>).map((data) => {
+            (async () => {
+              await set(
+                ref(this.db, `books/users/${this.uid}/${data.id}`),
+                data
+              )
+                .then(() => (res = "done"))
+                .catch((err) => console.log(err));
+            })();
           });
-        })();
-      }
-      // eslint-disable-next-line
-    }, []);
-  }
-
-  function UpdateData(newData: UserValue) {
-    if (uid !== "" && newData.uid) {
-      update(ref(db, "books/users/" + uid + "/" + newData.uid), newData).then(
-        setRender(!render)
-      );
+        }
+      });
     }
+    return res;
   }
 
-  function DeleteData(item: UserValue, pub = false) {
-    remove(ref(db, "books/users/" + uid + "/" + item.uid))
-      .then(() => setRender(!render))
+  async UpdateData(newData: Data) {
+    if (this.uid !== "" && newData.id) {
+      return await update(
+        ref(this.db, "books/users/" + this.uid + "/" + newData.id),
+        newData
+      )
+        .then(() => "done")
+        .catch((err) => {
+          console.error(err);
+          throw new Error(err.message);
+        });
+    }
+    return new Error("Something went wrong downloading the file");
+  }
+
+  async DeleteData(item: UserValue, pub = false) {
+    let res = "";
+    await remove(ref(this.db, "books/users/" + this.uid + "/" + item.uid))
+      .then(() => (res = "done"))
       .catch((err) => console.log(err));
     if (pub)
-      remove(ref(db, "books/public/" + item.uid))
-        .then(() => setRender(!render))
+      await remove(ref(this.db, "books/public/" + item.uid))
+        .then(() => (res = "done"))
         .catch((err) => console.log(err));
+    return res;
   }
 
-  return { WriteData, ReadData, UpdateData, DeleteData, LoginData };
-};
-export default useData; */
+  async Download() {
+    let url = "";
+    const storage = getStorage();
+    // const fileRef = storageRef(storage, "Pdf/DarcoResume.pdf");
+
+    await getDownloadURL(storageRef(storage, "documents/AGPresume.pdf"))
+      .then((link) => {
+        url = link;
+      })
+      .catch((err) => {
+        console.error(err);
+        throw new Error(err.message);
+      });
+    return url;
+  }
+}
