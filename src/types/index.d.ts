@@ -1,3 +1,15 @@
+// firebase data structure
+export type Data = {
+  id: string;
+  autor: string;
+  name: string;
+  img: string;
+  avalible: boolean;
+  download: boolean;
+  like: boolean;
+  owner: string;
+};
+
 // context
 export type UserValue = {
   uid: string;
