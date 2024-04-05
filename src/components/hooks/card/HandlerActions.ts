@@ -13,6 +13,7 @@ type StoreData = {
 // useCardFunctions replacement
 export default class HandlerActions {
   uid: string;
+  data: HandlerData;
   constructor() {
     /*   const { userData } = useContext(context);
   const { UpdateData, DeleteData, ReadData } = useData();
@@ -24,6 +25,7 @@ export default class HandlerActions {
     // this.data = data;
     const { uid } = useContext(context);
     this.uid = uid;
+    this.data = new HandlerData(this.uid);
   }
 
   async handlerAllData(data: StoreData) {
@@ -54,12 +56,11 @@ export default class HandlerActions {
       title,
       showConfirmButton: false,
       timer,
-    });
+    } as any);
   }
 
   async handlerDownload(res: Data) {
-    const data = new HandlerData(res.id);
-    const file = await data.Download();
+    const file = await this.data.Download();
     if (typeof this.uid !== "string" || this.uid === "")
       return this.alert("error", "Sorry, You must log first", 1000, "center");
 
@@ -90,97 +91,24 @@ export default class HandlerActions {
       return;
     }
 
-    await data.UpdateData({ ...res, download: true }).then((res) => {
+    await this.data.UpdateData({ ...res, download: true }).then((res) => {
       if (res === "done") {
         this.alert("success", "Downloaded", 200, "center");
         window.open(file);
       } else this.alert("error", res as string, 1000, "center");
     });
   }
+
+  async HandlerLikes(data: Data) {
+    if (this.uid === "") {
+      this.alert("error", "Sorry, You must log first", 1000, "center");
+      return;
+    }
+
+    await this.data.UpdateData({ ...data, like: !data.like });
+
+    !data.like
+      ? this.alert("success", "Like", 500, "top-right")
+      : this.alert("warning", "Unlike", 500, "top-right");
+  }
 }
-
-/* import useData from "../firebase/useData";
-import { context } from "../../../context/Context";
-import useDownload from "../firebase/UseDownload";
-import Swal from "sweetalert2";
-import { useState, useEffect, useContext } from "react";
-
-const useCardFunctions = () => {
-  const { userData } = useContext(context);
-  const { UpdateData, DeleteData, ReadData } = useData();
-  const file = useDownload();
-  const { user, publics } = ReadData();
-
-  if (!userData || !userData.uid) return null;
-  const { uid } = userData;
-
-  const alert = (
-    icon: string,
-    title: string,
-    timer: number,
-    position = "center"
-  ) => {
-    Swal.fire({
-      position,
-      icon,
-      title,
-      showConfirmButton: false,
-      timer,
-    });
-  };
-
-  const handlerDownload = (res) => {
-    if (!file) return;
-    if (uid === "") {
-      alert("error", "Sorry, You must log first", 1000, "center");
-      return;
-    }
-
-    if (res.download) {
-      Swal.fire({
-        title: "Want download again?",
-        text: "You want download this file again!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Download",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          alert("success", "Downloading ...", 500, "center");
-          window.location.href = file;
-        }
-      });
-      return;
-    }
-    window.location.href = file;
-    UpdateData({
-      ...res,
-      download: true,
-      avalible: false,
-    });
-  };
-
-  const HandlerLikes = (res) => {
-    if (uid === "") {
-      alert("error", "Sorry, You must log first", 1000, "center", true);
-      return;
-    }
-    !res.like && alert("success", "Like", 500, "top-right");
-    UpdateData({ ...res, like: !res.like });
-  };
-
-  const handlerDelete = (itm) => {
-    if (uid === "") {
-      alert("error", "Sorry, You must log first", 1500);
-      return;
-    }
-    itm.owner === uid
-      ? (DeleteData(itm, true), alert("success", "deleted", 1000))
-      : alert("warning", "You just can delete your books", 1500);
-  };
-
-  return { HandlerLikes, handlerDownload, handlerDelete, HandlerData };
-};
-export default useCardFunctions;
- */

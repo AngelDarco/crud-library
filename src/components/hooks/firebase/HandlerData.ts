@@ -120,7 +120,7 @@ export default class HandlerData {
           throw new Error(err.message);
         });
     }
-    return new Error("Something went wrong downloading the file");
+    return new Error("Something went wrong updating the data");
   }
 
   async DeleteData(item: UserValue, pub = false) {

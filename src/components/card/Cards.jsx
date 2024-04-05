@@ -76,17 +76,17 @@ const Cards = () => {
                   onClick={() => actions.handlerDownload(res, "download")}
                   className={res.download ? "download" : ""}
                 />
-                {/*<div className="likes">
+                <div className="likes">
                   {res.like ? (
                     <AiTwotoneLike
-                      onClick={() => HandlerLikes(res)}
+                      onClick={() => actions.HandlerLikes(res)}
                       className="like"
                     />
                   ) : (
-                    <AiOutlineLike onClick={() => HandlerLikes(res)} />
+                    <AiOutlineLike onClick={() => actions.HandlerLikes(res)} />
                   )}
                 </div>
-                <AiFillDelete onClick={() => handlerDelete(res)} />*/}
+                {/* <AiFillDelete onClick={() => handlerDelete(res)} /> */}
               </div>
             </div>
             <img src={res.img} alt={res.name} />
