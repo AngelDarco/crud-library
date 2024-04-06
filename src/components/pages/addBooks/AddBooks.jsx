@@ -1,128 +1,98 @@
 import "./AddBooks.scss";
 import "react-toastify/dist/ReactToastify.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import HandlerData from "../../hooks/firebase/HandlerData";
 
 const AddBooks = () => {
-  const initialState = { autor: "", name: "", img: "" };
+  const [img, setImg] = useState();
 
-  const [bookData, setBookData] = useState(initialState);
-  const [img, setImg] = useState("");
-  const [clas, setClas] = useState(false);
-
-  // const { uid } = useContext(context);
-  // console.log(uid);
   const data = new HandlerData();
+  let formData = useRef({});
+  const FORM_FIELDS = 3;
 
-  const handlerForms = ({ name, value }) => {
-    switch (name) {
-      case "autor":
-        setBookData({
-          ...bookData,
-          autor: value,
-        });
-        break;
-      case "name":
-        setBookData({
-          ...bookData,
-          name: value,
-        });
-        break;
-      case "img":
-        setBookData({
-          ...bookData,
-          img: value,
-        });
-        setImg(URL.createObjectURL(value));
-        setClas(true);
-        break;
-
-      default:
-        break;
+  const handlerForms = (e) => {
+    if (!e.target) {
+      setImg(URL.createObjectURL(e.value));
+      return (formData.current[e.name] = e.value);
     }
+    const { name, value } = e.target;
+    formData.current[name] = value;
   };
 
   const handlerReset = () => {
-    setBookData(initialState);
-    setClas(false);
+    setImg();
   };
 
   const handlerAdd = (e) => {
     e.preventDefault();
-    let count = 0;
-    Object.keys(bookData).map((item) => {
-      bookData[item] === "" && count++;
-    });
-    if (count > 0) {
-      Swal.fire({
+    if (Object.values(formData.current).length < FORM_FIELDS)
+      return Swal.fire({
         position: "center",
         icon: "error",
         title: "Please fill all the fields",
         showConfirmButton: false,
-        timer: 500,
+        timer: 800,
       });
-    } else {
-      toast
-        .promise(data.WriteData(bookData), {
-          pending: "Adding New Book",
-          success: "Book added",
-          error: "We sorry, something went wrong",
-          timer: 500,
-        })
-        .then(() => {
-          setClas(false);
-          setBookData(initialState);
-          count = 0;
-          document.getElementById("form").reset();
-        })
-        .catch((err) => console.log(err));
-    }
+
+    toast
+      .promise(data.WriteData(formData.current), {
+        pending: "Adding New Book",
+        success: "Book added",
+        error: "We sorry, something went wrong",
+        timer: 500,
+      })
+      .then(() => {
+        formData = {};
+        setImg();
+        document.getElementById("form").reset();
+      })
+      .catch((err) => console.log(err));
   };
 
   const handlerFile = (file) => {
-    if (file?.target?.files[0] === undefined) return;
+    const img = file?.target?.files[0];
+    if (img === undefined) return;
 
     if (
-      file?.target?.files[0]?.type !== "image/png" &&
-      file?.target?.files[0]?.type !== "image/jpeg"
-    ) {
-      Swal.fire({
+      img?.type !== "image/png" &&
+      img?.type !== "image/jpg" &&
+      img?.type !== "image/jpeg"
+    )
+      return Swal.fire({
         position: "center",
         icon: "error",
         title: "Only .jpg, .png or .jpeg format are allowed",
         showConfirmButton: false,
         timer: 1800,
       });
-      return;
-    }
-    handlerForms({ name: "img", value: file.target.files[0] });
+    handlerForms({ name: "img", value: img });
   };
 
   return (
     <div className="containerAddBooks">
       <div className="form">
         <div className="img">
-          <img src={img} alt="myImg" className={!clas ? "hide" : "show"} />
+          <img src={img} alt="myImg" className={!img ? "hide" : "show"} />
         </div>
         <form id="form">
           <input
-            onChange={(e) => handlerFile(e)}
+            onChange={handlerFile}
             type="file"
             name="img"
             id="img"
             required
           />
           <input
-            onChange={(e) => handlerForms(e.target)}
+            onKeyUp={handlerForms}
             type="text"
             name="autor"
             placeholder="Autor"
             required
           />
           <input
-            onChange={(e) => handlerForms(e.target)}
+            onKeyUp={handlerForms}
             type="text"
             name="name"
             placeholder="Book name"
