@@ -1,16 +1,20 @@
 import "./AddBooks.scss";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
-import useData from "../../hooks/firebase/useData";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
+import HandlerData from "../../hooks/firebase/HandlerData";
 
 const AddBooks = () => {
   const initialState = { autor: "", name: "", img: "" };
-  const { WriteData } = useData();
+
   const [bookData, setBookData] = useState(initialState);
   const [img, setImg] = useState("");
   const [clas, setClas] = useState(false);
+
+  // const { uid } = useContext(context);
+  // console.log(uid);
+  const data = new HandlerData();
 
   const handlerForms = ({ name, value }) => {
     switch (name) {
@@ -57,14 +61,15 @@ const AddBooks = () => {
         icon: "error",
         title: "Please fill all the fields",
         showConfirmButton: false,
-        timer: 1000,
+        timer: 500,
       });
     } else {
       toast
-        .promise(WriteData(bookData), {
+        .promise(data.WriteData(bookData), {
           pending: "Adding New Book",
           success: "Book added",
           error: "We sorry, something went wrong",
+          timer: 500,
         })
         .then(() => {
           setClas(false);

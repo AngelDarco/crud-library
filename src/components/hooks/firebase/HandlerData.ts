@@ -12,13 +12,16 @@ import { ref as storageRef } from "firebase/storage";
 import { Data, UserValue, WriteData } from "../../../types";
 import uuid from "react-uuid";
 import { getDownloadURL, getStorage, uploadBytes } from "firebase/storage";
+import { useContext } from "react";
+import { context } from "../../../context/Context";
 
 export default class HandlerData {
   db: Database;
   uid: string;
 
-  constructor(uid: string) {
+  constructor() {
     this.db = getDatabase();
+    const { uid } = useContext(context);
     this.uid = uid;
   }
   // Read the stored books data from firebase
@@ -51,14 +54,13 @@ export default class HandlerData {
     const key = uuid();
     const loadImg = async () => {
       const storage = getStorage();
-      const refImg = storageRef(storage, "Books/" + key + img.name);
-      await uploadBytes(refImg, img)
-        .then((snapshot) => {
-          getDownloadURL(storageRef(storage, snapshot.metadata.fullPath)).then(
-            (link) => {
-              return link;
-            }
+      const refImg = storageRef(storage, `books/${key}${img.name}`);
+      return await uploadBytes(refImg, img)
+        .then(async (snapshot) => {
+          const link = await getDownloadURL(
+            storageRef(storage, snapshot.metadata.fullPath)
           );
+          return link;
         })
         .catch((err) => {
           console.log(err);
@@ -68,8 +70,12 @@ export default class HandlerData {
 
     return new Promise((resolve, reject) =>
       loadImg()
-        .then((res) =>
-          set(ref(this.db, `books/public/${key}`), {
+        .then((res) => {
+          const path = this.uid
+            ? `books/users/${this.uid}/${key}`
+            : `books/public/${key}`;
+
+          set(ref(this.db, path), {
             id: key,
             autor,
             name,
@@ -80,8 +86,8 @@ export default class HandlerData {
             owner: this.uid,
           })
             .then(() => resolve("done"))
-            .catch((err) => reject(new Error(err.message)))
-        )
+            .catch((err) => reject(new Error(err.message)));
+        })
         .catch((err) => reject(new Error(err.message)))
     );
   }
