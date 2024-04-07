@@ -9,11 +9,11 @@ import {
   remove,
 } from "firebase/database";
 import { ref as storageRef } from "firebase/storage";
-import { Data, UserValue, WriteData } from "../../../types";
+import { Data, UserValue, WriteData } from "../types";
 import uuid from "react-uuid";
 import { getDownloadURL, getStorage, uploadBytes } from "firebase/storage";
 import { useContext } from "react";
-import { context } from "../../../context/Context";
+import { context } from "../context/Context";
 
 export default class HandlerData {
   db: Database;

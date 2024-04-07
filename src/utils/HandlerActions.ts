@@ -1,31 +1,21 @@
 import { useContext } from "react";
-import { Data } from "../../../types";
-import { context } from "../../../context/Context";
+import { Data } from "../types";
+import { context } from "../context/Context";
 import Swal, { SweetAlertOptions } from "sweetalert2";
-// import useDownload from "../firebase/UseDownload";
-import HandlerData from "../firebase/HandlerData";
+import HandlerData from "./HandlerData";
 
 type DataKeys = "userData" | "publicData";
 type StoreData = {
   [key in DataKeys]: { [key: string]: Data };
 };
 
-// useCardFunctions replacement
 export default class HandlerActions {
   uid: string;
   data: HandlerData;
   constructor() {
-    /*   const { userData } = useContext(context);
-  const { UpdateData, DeleteData, ReadData } = useData();
-  const file = useDownload();
-  const { user, publics } = ReadData();
-
-  if (!userData || !userData.uid) return null;
-  const { uid } = userData; */
-    // this.data = data;
     const { uid } = useContext(context);
     this.uid = uid;
-    this.data = new HandlerData(this.uid);
+    this.data = new HandlerData();
   }
 
   async handlerAllData(data: StoreData) {

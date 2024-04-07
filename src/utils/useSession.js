@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../firebase/config";
+import { auth } from "../firebase/config";
 
 const useSession = () => {
   const Register = async ({ email, pass }) => {
