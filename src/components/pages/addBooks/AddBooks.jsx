@@ -3,7 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
-import HandlerData from "../../hooks/firebase/HandlerData";
+import HandlerData from "../../../utils/HandlerData";
 
 const AddBooks = () => {
   const [img, setImg] = useState();

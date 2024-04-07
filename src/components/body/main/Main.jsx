@@ -9,9 +9,7 @@ import { context } from "../../../context/Context";
 import { useContext, useEffect } from "react";
 
 const Main = () => {
-  //   const { userData } = Auth();
   const { user, userData } = useContext(context);
-  // console.log(userData, user);
 
   useEffect(() => {
     document.querySelectorAll(".more p").forEach((el) => {

@@ -6,8 +6,8 @@ import { AiOutlineLike, AiTwotoneLike, AiFillDelete } from "react-icons/ai";
 import { useState, useEffect, useContext } from "react";
 import { CirclesWithBar } from "react-loader-spinner";
 
-import HandlerActions from "../hooks/card/HandlerActions";
-import HandlerData from "../hooks/firebase/HandlerData";
+import HandlerActions from "../../utils/HandlerActions";
+import HandlerData from "../../utils/HandlerData";
 import { context } from "../../context/Context";
 
 const Cards = () => {
