@@ -1,6 +1,6 @@
 import "./Register.scss";
 import { useState, useRef } from "react";
-import useSession from "../../hooks/session/useSession";
+import useSession from "../../../utils/useSession";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 

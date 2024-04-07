@@ -2,7 +2,7 @@ import "./Login.scss";
 import { useContext, useState } from "react";
 import { context } from "../../../context/Context";
 import Main from "../../body/main/Main";
-import useSession from "../../hooks/session/useSession";
+import useSession from "../../../utils/useSession";
 import Swal from "sweetalert2";
 
 const Login = () => {
