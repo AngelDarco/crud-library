@@ -41,7 +41,7 @@ const Cards = () => {
 
   const handlerActions = (fn) => {
     if (fn) {
-      fn;
+      fn();
       setAction(!action);
     }
   };
@@ -74,24 +74,32 @@ const Cards = () => {
               <div>
                 <FaDownload
                   onClick={() =>
-                    handlerActions(actions.handlerDownload(res, "download"))
+                    handlerActions(() =>
+                      actions.handlerDownload(res, "download")
+                    )
                   }
                   className={res.download ? "download" : ""}
                 />
                 <div className="likes">
                   {res.like ? (
                     <AiTwotoneLike
-                      onClick={() => handlerActions(actions.HandlerLikes(res))}
+                      onClick={() =>
+                        handlerActions(() => actions.HandlerLikes(res))
+                      }
                       className="like"
                     />
                   ) : (
                     <AiOutlineLike
-                      onClick={() => handlerActions(actions.HandlerLikes(res))}
+                      onClick={() =>
+                        handlerActions(() => actions.HandlerLikes(res))
+                      }
                     />
                   )}
                 </div>
                 <AiFillDelete
-                  onClick={() => handlerActions(actions.HandlerDelete(res))}
+                  onClick={() =>
+                    handlerActions(() => actions.HandlerDelete(res))
+                  }
                 />
               </div>
             </div>
