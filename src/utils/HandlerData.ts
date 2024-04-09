@@ -7,27 +7,24 @@ import {
   update,
   remove,
   DatabaseReference,
-  // DataSnapshot,
 } from "firebase/database";
+
 import { ref as storageRef } from "firebase/storage";
 import { Data, WriteData } from "../types";
 import uuid from "react-uuid";
 import { getDownloadURL, getStorage, uploadBytes } from "firebase/storage";
 
-// type FirebaseData = {
-//   usersData?: DataSnapshot;
-//   publicData?: DataSnapshot;
-// };
-
 export default class HandlerData {
   db: Database;
   uid: string;
+  downloadPath: string;
   private publicRef: DatabaseReference;
   private usersRef: DatabaseReference;
 
   constructor(uid: string) {
     this.db = getDatabase();
     this.uid = uid;
+    this.downloadPath = "documents/AGPresume.pdf";
     this.publicRef = ref(this.db, "books/public/");
     this.usersRef = ref(this.db, "books/users/");
   }
@@ -47,9 +44,10 @@ export default class HandlerData {
       // get users data
       const getUsersData = () => {
         onValue(this.usersRef, (snapshot) => {
-          Object.values(snapshot.val()).map((data) => {
-            publicData = { ...publicData, ...(data as Data) };
-          });
+          if (snapshot.exists())
+            Object.values(snapshot.val()).map((data) => {
+              publicData = { ...publicData, ...(data as Data) };
+            });
 
           // call current user
           getCurrentUser();
@@ -58,7 +56,7 @@ export default class HandlerData {
 
       // get public data
       onValue(this.publicRef, (snapshot) => {
-        publicData = { ...snapshot.val() };
+        if (snapshot.exists()) publicData = { ...snapshot.val() };
 
         // call users data
         getUsersData();
@@ -164,9 +162,8 @@ export default class HandlerData {
   async Download() {
     let url = "";
     const storage = getStorage();
-    // const fileRef = storageRef(storage, "Pdf/DarcoResume.pdf");
 
-    await getDownloadURL(storageRef(storage, "documents/AGPresume.pdf"))
+    await getDownloadURL(storageRef(storage, this.downloadPath))
       .then((link) => {
         url = link;
       })
