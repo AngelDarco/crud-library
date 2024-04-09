@@ -1,5 +1,5 @@
-import { useEffect, useState, createContext, useContext } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState, createContext } from "react";
+import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { UserValue } from "../types";
 
@@ -11,24 +11,13 @@ const userValue: UserValue = {
 export const context = createContext(userValue);
 
 export const AuthProvider = ({ children }: { children: JSX.Element }) => {
-  const data = useContext(context);
-  const [userData, setUserData] = useState(data);
+  const [userData, setUserData] = useState(userValue);
 
   useEffect(() => {
-    (() => {
-      onAuthStateChanged(auth, (currentUser) => {
-        currentUser
-          ? setUserData({
-              uid: currentUser.uid,
-              user: currentUser.email || "",
-            })
-          : setUserData({
-              uid: "",
-              user: "",
-            });
-      });
-    })();
-    return () => setUserData(userValue);
+    onAuthStateChanged(auth, async (currentUser) => {
+      const { uid, email } = currentUser as User;
+      setUserData({ uid, user: email || "" });
+    });
   }, []);
 
   return (
