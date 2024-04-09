@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vite build && firebase deploy",
+    "firebase:preview": "firebase hosting:channel:deploy darco-library"
   },
   "dependencies": {
+    "eslint-config-prettier": "^9.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-toastify": "^9.0.7",
@@ -15,10 +18,16 @@
     "sweetalert2": "^11.4.24"
   },
   "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
     "@vitejs/plugin-react": "^1.0.7",
+    "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "^8.13.0",
-    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react": "latest",
     "eslint-plugin-react-hooks": "^4.4.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
     "firebase": "^9.6.10",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
@@ -27,6 +36,7 @@
     "react-loader-spinner": "^5.3.4",
     "react-router-dom": "^6.3.0",
     "sass": "^1.50.0",
+    "typescript": "^5.2.2",
     "vite": "^2.9.0"
   }
 }

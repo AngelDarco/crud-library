@@ -1,112 +1,113 @@
-import './AddBooks.scss';
-import 'react-toastify/dist/ReactToastify.css';
-import { useState } from 'react';
-import useData from '../../hooks/firebase/useData';
-import Swal from 'sweetalert2';
-import { ToastContainer, toast } from 'react-toastify';
+import "./AddBooks.scss";
+import "react-toastify/dist/ReactToastify.css";
+import { useContext, useRef, useState } from "react";
+import Swal from "sweetalert2";
+import { ToastContainer, toast } from "react-toastify";
+import HandlerData from "../../../utils/HandlerData";
+import { context } from "../../../context/Context";
 
-const AddBooks = ()=> {
-    const initialState = {autor:'',name:'',img:''}
-    const { WriteData } = useData()
-    const [bookData, setBookData] = useState(initialState);
-    const [ img, setImg ] = useState('');
-    const [ clas, setClas ] = useState(false);
-    
-    const handlerForms = ({name,value})=>{
-        switch (name) {
-                case 'autor':
-                    setBookData({
-                        ...bookData,
-                        autor: value
-                    })
-                    break;
-                case 'name':
-                    setBookData({
-                        ...bookData,
-                        name: value
-                    })
-                    break;
-                case 'img':
-                    setBookData({
-                        ...bookData,
-                        img: value
-                    })
-                        setImg(URL.createObjectURL(value))
-                        setClas(true)
-                    break
-                    
-                    default:
-                        break;
-                    }
+const AddBooks = () => {
+  const [img, setImg] = useState();
+  const { uid } = useContext(context);
+
+  const data = new HandlerData(uid);
+  let formData = useRef({});
+  const FORM_FIELDS = 3;
+
+  const handlerForms = (e) => {
+    if (!e.target) {
+      setImg(URL.createObjectURL(e.value));
+      return (formData.current[e.name] = e.value);
     }
+    const { name, value } = e.target;
+    formData.current[name] = value;
+  };
 
-    const handlerReset = ()=>{
-        setBookData(initialState);
-        setClas(false)
-    }
+  const handlerReset = () => {
+    setImg();
+  };
 
-    const handlerAdd = (e)=>{
-        e.preventDefault();
-        let count = 0;
-        Object.keys(bookData).map(item =>{
-            bookData[item] === '' && count++          
-        })
-            if(count > 0){
-             Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Please fill all the fields',
-                showConfirmButton: false,
-                timer: 1000
-            });
-            }else{
-            toast.promise(WriteData(bookData),{
-                  pending: 'Adding New Book',
-                  success: 'Book added',
-                  error: 'We sorry, something went wrong'
-              },
-              ) 
-              .then(()=> {
-                setClas(false)
-                setBookData(initialState)
-                count = 0;
-                document.getElementById('form').reset();
-              })           
-    }
-}
-    
-    const handlerFile = (file)=> {
-        if(file?.target?.files[0] === undefined)  return
-        
-        if(file?.target?.files[0]?.type !== 'image/png' && file?.target?.files[0]?.type !== 'image/jpeg') {
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Only .jpg, .png or .jpeg format are allowed',
-                showConfirmButton: false,
-                timer: 1800
-            })
-            return
-        }
-        handlerForms({name:'img', value:file.target.files[0]});
-    }   
+  const handlerAdd = (e) => {
+    e.preventDefault();
+    if (Object.values(formData.current).length < FORM_FIELDS)
+      return Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Please fill all the fields",
+        showConfirmButton: false,
+        timer: 800,
+      });
 
-    return(
-        <div className="containerAddBooks">
-            <div className="form">
-                <div className="img">
-                    <img src={img} alt="myImg" className={!clas ? 'hide' : 'show'}/>
-                </div>
-                <form id='form'>
-                    <input onChange={(e)=> handlerFile(e)} type="file" name="img" id="img" required />
-                    <input onChange={(e)=> handlerForms(e.target)} type="text" name="autor" placeholder='Autor' required/>
-                    <input onChange={(e)=> handlerForms(e.target)} type="text" name="name" placeholder='Book name' required/>
-                    <button onClick={handlerReset} type="reset">reset</button>           
-                    <button onClick={handlerAdd}>add</button>
-                </form>
-            </div>       
-            <ToastContainer limit={2}/>    
-        </div>
+    toast
+      .promise(data.WriteData(formData.current), {
+        pending: "Adding New Book",
+        success: "Book added",
+        error: "We sorry, something went wrong",
+        timer: 500,
+      })
+      .then(() => {
+        formData = {};
+        setImg();
+        document.getElementById("form").reset();
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handlerFile = (file) => {
+    const img = file?.target?.files[0];
+    if (img === undefined) return;
+
+    if (
+      img?.type !== "image/png" &&
+      img?.type !== "image/jpg" &&
+      img?.type !== "image/jpeg"
     )
-}
+      return Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Only .jpg, .png or .jpeg format are allowed",
+        showConfirmButton: false,
+        timer: 1800,
+      });
+    handlerForms({ name: "img", value: img });
+  };
+
+  return (
+    <div className="containerAddBooks">
+      <div className="form">
+        <div className="img">
+          <img src={img} alt="myImg" className={!img ? "hide" : "show"} />
+        </div>
+        <form id="form">
+          <input
+            onChange={handlerFile}
+            type="file"
+            name="img"
+            id="img"
+            required
+          />
+          <input
+            onKeyUp={handlerForms}
+            type="text"
+            name="autor"
+            placeholder="Autor"
+            required
+          />
+          <input
+            onKeyUp={handlerForms}
+            type="text"
+            name="name"
+            placeholder="Book name"
+            required
+          />
+          <button onClick={handlerReset} type="reset">
+            reset
+          </button>
+          <button onClick={handlerAdd}>add</button>
+        </form>
+      </div>
+      <ToastContainer limit={2} />
+    </div>
+  );
+};
 export default AddBooks;

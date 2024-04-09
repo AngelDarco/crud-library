@@ -45,6 +45,7 @@
       -webkit-backdrop-filter: blur(9px);
 
       div {
+        cursor: pointer;
         display: flex;
         width: 50%;
         height: 2.5rem;
@@ -52,6 +53,11 @@
         align-items: center;
         font-size: 1.5rem;
         color: #1f1e1ed0;
+
+        & > :hover {
+          scale: 1.1;
+          background-color: #892be27e;
+        }
       }
 
       .avalible {
