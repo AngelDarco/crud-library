@@ -1,14 +1,16 @@
 import "./AddBooks.scss";
 import "react-toastify/dist/ReactToastify.css";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import HandlerData from "../../../utils/HandlerData";
+import { context } from "../../../context/Context";
 
 const AddBooks = () => {
   const [img, setImg] = useState();
+  const { uid } = useContext(context);
 
-  const data = new HandlerData();
+  const data = new HandlerData(uid);
   let formData = useRef({});
   const FORM_FIELDS = 3;
 
