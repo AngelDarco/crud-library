@@ -1,52 +1,69 @@
 import {
   Database,
-  get,
   getDatabase,
   set,
   ref,
   onValue,
   update,
   remove,
+  DatabaseReference,
+  // DataSnapshot,
 } from "firebase/database";
 import { ref as storageRef } from "firebase/storage";
-import { Data, UserValue, WriteData } from "../types";
+import { Data, WriteData } from "../types";
 import uuid from "react-uuid";
 import { getDownloadURL, getStorage, uploadBytes } from "firebase/storage";
-import { useContext } from "react";
-import { context } from "../context/Context";
+
+// type FirebaseData = {
+//   usersData?: DataSnapshot;
+//   publicData?: DataSnapshot;
+// };
 
 export default class HandlerData {
   db: Database;
   uid: string;
+  private publicRef: DatabaseReference;
+  private usersRef: DatabaseReference;
 
-  constructor() {
+  constructor(uid: string) {
     this.db = getDatabase();
-    const { uid } = useContext(context);
     this.uid = uid;
+    this.publicRef = ref(this.db, "books/public/");
+    this.usersRef = ref(this.db, "books/users/");
   }
-  // Read the stored books data from firebase
+
   async ReadData() {
-    try {
-      const publicSnapshot = await get(ref(this.db, "books/public/"));
-      const usersSnapshots = await get(ref(this.db, "books/users/"));
+    return new Promise((resolve) => {
+      let publicData = {},
+        userData = {};
 
-      let usersData = {};
-      Object.values(usersSnapshots.val() as Record<string, UserValue>).forEach(
-        (users) => {
-          usersData = { ...usersData, ...users };
-        }
-      );
+      // get current user
+      const getCurrentUser = () => {
+        onValue(ref(this.db, `/books/users/${this.uid}`), (snapshot) => {
+          userData = { ...snapshot.val() };
+          resolve({ publicData, userData });
+        });
+      };
+      // get users data
+      const getUsersData = () => {
+        onValue(this.usersRef, (snapshot) => {
+          Object.values(snapshot.val()).map((data) => {
+            publicData = { ...publicData, ...(data as Data) };
+          });
 
-      const allData = { ...publicSnapshot.val(), ...usersData };
+          // call current user
+          getCurrentUser();
+        });
+      };
 
-      const userSnapshot = await get(ref(this.db, "books/users/" + this.uid));
-      const userData = userSnapshot.val();
+      // get public data
+      onValue(this.publicRef, (snapshot) => {
+        publicData = { ...snapshot.val() };
 
-      return { publicData: allData, userData };
-    } catch (error) {
-      console.error("Error reading data:", error);
-      throw error;
-    }
+        // call users data
+        getUsersData();
+      });
+    });
   }
 
   async WriteData({ autor, name, img }: WriteData) {
@@ -95,7 +112,7 @@ export default class HandlerData {
   async LoginData() {
     let res = "";
     if (this.uid) {
-      onValue(ref(this.db, "books/public/"), (snapshot) => {
+      onValue(ref(this.db, "books/public/"), async (snapshot) => {
         const database = snapshot.val();
         if (database !== null) {
           Object.values(database as Record<string, Data>).map((data) => {

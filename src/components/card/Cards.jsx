@@ -12,6 +12,7 @@ import { context } from "../../context/Context";
 
 const Cards = () => {
   const [loading, setLoading] = useState(true);
+  const [action, setAction] = useState(false);
   const [data, setData] = useState(undefined);
   const { uid } = useContext(context);
 
@@ -19,22 +20,31 @@ const Cards = () => {
   const dataHandler = new HandlerData(uid);
 
   // give the interaction buttons functionality
-  const actions = new HandlerActions();
+  const actions = new HandlerActions(uid);
 
   // pass the data to the interaction buttons class
   async function getData() {
     const allData = [];
-    const retrievedData = await actions.handlerAllData(dataHandler.ReadData());
+    const data = await dataHandler.ReadData();
+    const retrievedData = await actions.handlerAllData(data);
     retrievedData.forEach((value) => allData.push(value));
     return allData;
   }
 
   useEffect(() => {
-    setLoading(false);
-    getData().then((res) => setData(res));
-  }, []);
+    if (uid)
+      getData().then((res) => {
+        setData(res);
+        setLoading(false);
+      });
+  }, [uid, action]);
 
-  console.log("rendering ...");
+  const handlerActions = (fn) => {
+    if (fn) {
+      fn;
+      setAction(!action);
+    }
+  };
 
   return (
     <div className="cardsContainer">
@@ -63,20 +73,26 @@ const Cards = () => {
               </div>
               <div>
                 <FaDownload
-                  onClick={() => actions.handlerDownload(res, "download")}
+                  onClick={() =>
+                    handlerActions(actions.handlerDownload(res, "download"))
+                  }
                   className={res.download ? "download" : ""}
                 />
                 <div className="likes">
                   {res.like ? (
                     <AiTwotoneLike
-                      onClick={() => actions.HandlerLikes(res)}
+                      onClick={() => handlerActions(actions.HandlerLikes(res))}
                       className="like"
                     />
                   ) : (
-                    <AiOutlineLike onClick={() => actions.HandlerLikes(res)} />
+                    <AiOutlineLike
+                      onClick={() => handlerActions(actions.HandlerLikes(res))}
+                    />
                   )}
                 </div>
-                <AiFillDelete onClick={() => actions.HandlerDelete(res)} />
+                <AiFillDelete
+                  onClick={() => handlerActions(actions.HandlerDelete(res))}
+                />
               </div>
             </div>
             <img src={res.img} alt={res.name} />

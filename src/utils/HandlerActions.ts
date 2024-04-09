@@ -1,6 +1,4 @@
-import { useContext } from "react";
 import { Data } from "../types";
-import { context } from "../context/Context";
 import Swal, { SweetAlertOptions } from "sweetalert2";
 import HandlerData from "./HandlerData";
 
@@ -12,24 +10,25 @@ type StoreData = {
 export default class HandlerActions {
   uid: string;
   data: HandlerData;
-  constructor() {
-    const { uid } = useContext(context);
+  constructor(uid: string) {
     this.uid = uid;
-    this.data = new HandlerData();
+    this.data = new HandlerData(this.uid);
   }
 
   async handlerAllData(data: StoreData) {
     const arr = new Set();
     const allData = await Promise.resolve(data);
-
-    Object.values(allData.publicData).forEach((value) => {
-      Object.values(allData.userData).forEach((value2) => {
-        if (value2.id === value.id) {
+    if (allData)
+      if (allData.publicData)
+        Object.values(allData.publicData).forEach((value) => {
+          if (allData.userData)
+            Object.values(allData.userData).forEach((value2) => {
+              if (value2.id === value.id) {
+                arr.add(value);
+              }
+            });
           arr.add(value);
-        }
-      });
-      arr.add(value);
-    });
+        });
 
     return arr;
   }
