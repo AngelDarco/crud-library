@@ -9,13 +9,21 @@ import {
   DatabaseReference,
 } from "firebase/database";
 
-import { ref as storageRef } from "firebase/storage";
+import {
+  FirebaseStorage,
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  uploadBytes,
+  ref as storageRef,
+} from "firebase/storage";
+
 import { Data, WriteData } from "../types";
 import uuid from "react-uuid";
-import { getDownloadURL, getStorage, uploadBytes } from "firebase/storage";
 
 export default class HandlerData {
   db: Database;
+  storage: FirebaseStorage;
   uid: string;
   downloadPath: string;
   private publicRef: DatabaseReference;
@@ -23,6 +31,7 @@ export default class HandlerData {
 
   constructor(uid: string) {
     this.db = getDatabase();
+    this.storage = getStorage();
     this.uid = uid;
     this.downloadPath = "documents/AGPresume.pdf";
     this.publicRef = ref(this.db, "books/public/");
@@ -68,14 +77,14 @@ export default class HandlerData {
     if (!autor || !name || !img) throw new Error("All fields are required");
     const key = uuid();
     const loadImg = async () => {
-      const storage = getStorage();
-      const refImg = storageRef(storage, `books/${key}${img.name}`);
+      const refImg = storageRef(this.storage, `books/${key}${img.name}`);
       return await uploadBytes(refImg, img)
         .then(async (snapshot) => {
+          const path = snapshot.ref.fullPath;
           const link = await getDownloadURL(
-            storageRef(storage, snapshot.metadata.fullPath)
+            storageRef(this.storage, snapshot.metadata.fullPath)
           );
-          return link;
+          return { link, path };
         })
         .catch((err) => {
           console.log(err);
@@ -89,12 +98,14 @@ export default class HandlerData {
           const path = this.uid
             ? `books/users/${this.uid}/${key}`
             : `books/public/${key}`;
+          const imgPath = typeof res !== "string" ? res.path : "";
 
           set(ref(this.db, path), {
             id: key,
             autor,
             name,
-            img: res,
+            img: res.link,
+            imgPath: imgPath,
             avalible: true,
             download: false,
             like: false,
@@ -145,29 +156,35 @@ export default class HandlerData {
   }
 
   async DeleteData(bookData: Data) {
+    const deleteFromStorage = async () => {
+      const imgRef = storageRef(this.storage, `${bookData.imgPath}`);
+      if (imgRef) await deleteObject(imgRef);
+    };
+
     // admin can delete all books
     if (this.uid === import.meta.env.VITE_SUPER_USER) {
-      await remove(ref(this.db, `books/public/${bookData.id}`)).catch(
-        (err) => new Error(err.message)
-      );
+      await remove(ref(this.db, `books/public/${bookData.id}`))
+        .then(async () => await deleteFromStorage())
+        .catch((err) => new Error(err.message));
 
       return await remove(
         ref(this.db, `books/users/${bookData.owner}/${bookData.id}`)
-      ).catch((err) => new Error(err.message));
+      )
+        .then(async () => await deleteFromStorage())
+        .catch((err) => new Error(err.message));
     }
     return await remove(ref(this.db, `books/users/${this.uid}/${bookData.id}`))
-      .then(() => "done")
-      .catch((err) => {
-        console.error(err);
-        throw new Error(err);
-      });
+      .then(async () => {
+        await deleteFromStorage();
+        return "done";
+      })
+      .catch((err) => new Error(err.message));
   }
 
   async Download() {
     let url = "";
-    const storage = getStorage();
 
-    await getDownloadURL(storageRef(storage, this.downloadPath))
+    await getDownloadURL(storageRef(this.storage, this.downloadPath))
       .then((link) => {
         url = link;
       })
