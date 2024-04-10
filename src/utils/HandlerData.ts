@@ -37,7 +37,7 @@ export default class HandlerData {
       // get current user
       const getCurrentUser = () => {
         onValue(ref(this.db, `/books/users/${this.uid}`), (snapshot) => {
-          userData = { ...snapshot.val() };
+          if (snapshot.exists()) userData = { ...snapshot.val() };
           resolve({ publicData, userData });
         });
       };
@@ -144,14 +144,18 @@ export default class HandlerData {
     return new Error("Something went wrong updating the data");
   }
 
-  async DeleteData(bookId: string, admin = false) {
+  async DeleteData(bookData: Data) {
     // admin can delete all books
-    if (admin)
-      await remove(ref(this.db, "books/public/" + bookId))
-        .then(() => "done")
-        .catch((err) => console.log(err));
+    if (this.uid === import.meta.env.VITE_SUPER_USER) {
+      await remove(ref(this.db, `books/public/${bookData.id}`)).catch(
+        (err) => new Error(err.message)
+      );
 
-    return await remove(ref(this.db, "books/users/" + this.uid + "/" + bookId))
+      return await remove(
+        ref(this.db, `books/users/${bookData.owner}/${bookData.id}`)
+      ).catch((err) => new Error(err.message));
+    }
+    return await remove(ref(this.db, `books/users/${this.uid}/${bookData.id}`))
       .then(() => "done")
       .catch((err) => {
         console.error(err);

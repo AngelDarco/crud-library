@@ -106,8 +106,11 @@ export default class HandlerActions {
       this.alert("error", "Sorry, You must log first", 1500);
       return;
     }
-    this.uid === itm.owner
-      ? (this.data.DeleteData(itm.id), this.alert("success", "deleted", 1000))
-      : this.alert("warning", "You just can delete your books", 1500);
+    if (
+      this.uid === itm.owner ||
+      this.uid === import.meta.env.VITE_SUPER_USER
+    ) {
+      this.data.DeleteData(itm), this.alert("success", "deleted", 1000);
+    } else this.alert("warning", "You just can delete your books", 1500);
   }
 }
