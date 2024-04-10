@@ -1,8 +1,10 @@
 import "./Cards.scss";
 import "sweetalert2/src/sweetalert2.scss";
 import { FaDownload } from "react-icons/fa";
-import { BsFillBookmarkStarFill, BsBookmarkXFill } from "react-icons/bs";
-import { AiOutlineLike, AiTwotoneLike, AiFillDelete } from "react-icons/ai";
+import { BsBookmarkXFill } from "react-icons/bs";
+import { RiBookmark3Fill } from "react-icons/ri";
+import { AiOutlineLike, AiFillLike } from "react-icons/ai";
+import { FaTrashCan } from "react-icons/fa6";
 import { useState, useEffect, useContext } from "react";
 import { CirclesWithBar } from "react-loader-spinner";
 
@@ -14,13 +16,13 @@ const Cards = () => {
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState(false);
   const [data, setData] = useState(undefined);
-  const { uid } = useContext(context);
+  const { uid, user } = useContext(context);
 
   // retrieve data from firebase
   const dataHandler = new HandlerData(uid);
 
   // give the interaction buttons functionality
-  const actions = new HandlerActions(uid);
+  const actions = new HandlerActions(uid, user);
 
   // pass the data to the interaction buttons class
   async function getData() {
@@ -32,18 +34,15 @@ const Cards = () => {
   }
 
   useEffect(() => {
-    if (uid)
-      getData().then((res) => {
-        setData(res);
-        setLoading(false);
-      });
+    getData().then((res) => {
+      setData(res);
+      setLoading(false);
+    });
   }, [uid, action]);
 
-  const handlerActions = (fn) => {
-    if (fn) {
-      fn();
-      setAction(!action);
-    }
+  const handlerActions = async (fn) => {
+    await fn();
+    setAction(!action);
   };
 
   return (
@@ -66,7 +65,7 @@ const Cards = () => {
             <div className="icons">
               <div className="avalible">
                 {res.avalible ? (
-                  <BsFillBookmarkStarFill className="avalible" />
+                  <RiBookmark3Fill className="avalible" />
                 ) : (
                   <BsBookmarkXFill className="unavalible" />
                 )}
@@ -82,7 +81,7 @@ const Cards = () => {
                 />
                 <div className="likes">
                   {res.like ? (
-                    <AiTwotoneLike
+                    <AiFillLike
                       onClick={() =>
                         handlerActions(() => actions.HandlerLikes(res))
                       }
@@ -96,7 +95,7 @@ const Cards = () => {
                     />
                   )}
                 </div>
-                <AiFillDelete
+                <FaTrashCan
                   onClick={() =>
                     handlerActions(() => actions.HandlerDelete(res))
                   }
