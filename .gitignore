@@ -27,3 +27,4 @@ firebaseData.txt
 .env
 package-lock.json
 bun.lockb
+.firebase
