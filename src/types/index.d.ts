@@ -4,6 +4,7 @@ export type Data = {
   autor: string;
   name: string;
   img: string;
+  imgName: string;
   avalible: boolean;
   download: boolean;
   like: boolean;
