@@ -28,6 +28,7 @@ export default class HandlerData {
   downloadPath: string;
   private publicRef: DatabaseReference;
   private usersRef: DatabaseReference;
+  storage: FirebaseStorage;
 
   constructor(uid: string) {
     this.db = getDatabase();
@@ -36,6 +37,7 @@ export default class HandlerData {
     this.downloadPath = "documents/AGPresume.pdf";
     this.publicRef = ref(this.db, "books/public/");
     this.usersRef = ref(this.db, "books/users/");
+    this.storage = getStorage();
   }
 
   async ReadData() {
@@ -76,6 +78,9 @@ export default class HandlerData {
   async WriteData({ autor, name, img }: WriteData) {
     if (!autor || !name || !img) throw new Error("All fields are required");
     const key = uuid();
+    const imgPath = `books/users/${this.uid}/${key}`;
+    const imgName = `books/${key}${img.name}`;
+
     const loadImg = async () => {
       const refImg = storageRef(this.storage, `books/${key}${img.name}`);
       return await uploadBytes(refImg, img)
@@ -87,8 +92,7 @@ export default class HandlerData {
           return { link, path };
         })
         .catch((err) => {
-          console.log(err);
-          return `${err.message}`;
+          throw new Error(err.message);
         });
     };
 
@@ -100,12 +104,14 @@ export default class HandlerData {
             : `books/public/${key}`;
           const imgPath = typeof res !== "string" ? res.path : "";
 
+
           set(ref(this.db, path), {
             id: key,
             autor,
             name,
             img: res.link,
             imgPath: imgPath,
+
             avalible: true,
             download: false,
             like: false,
@@ -179,6 +185,7 @@ export default class HandlerData {
         return "done";
       })
       .catch((err) => new Error(err.message));
+
   }
 
   async Download() {
@@ -193,5 +200,10 @@ export default class HandlerData {
         throw new Error(err.message);
       });
     return url;
+  }
+
+  private async cleanStorage(imgName: string) {
+    const refImg = storageRef(this.storage, `${imgName}`);
+    return deleteObject(refImg).catch((err) => new Error(err.message));
   }
 }
