@@ -1,4 +1,4 @@
-@mixin dFlex {
+@mixin flex {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -6,30 +6,32 @@
 
 /* Main container */
 .containerMain {
+  max-width: var(--max-width);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 2rem;
   width: var(--width);
   height: 100%;
-
-  /* header main section */
-  .text {
-    @include dFlex();
-    grid-column: 1/6;
-    height: 3rem;
-
-    p {
-      font-weight: bold;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-    }
-  }
+  padding-bottom: 2rem;
 
   /* Cards section */
   .recommended {
     width: 100%;
     height: 100%;
     grid-column: 1/5;
+
+    /* header main section */
+    .text {
+      @include flex();
+      grid-column: 1/6;
+      height: 3rem;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      p {
+        font-weight: bold;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+      }
+    }
 
     .cards {
       width: 100%;
@@ -69,17 +71,20 @@
     div {
       padding: 2% 5%;
       position: relative;
+
       a {
         text-decoration: none;
-        color: var(--color);
+        color: #000;
+
         &:hover {
           text-shadow: 0 0 5px #fdf906;
         }
       }
       p {
         cursor: pointer;
-        padding: 5% 0;
+        padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #555;
+
         &:hover {
           text-shadow: 0 0 10px #555;
         }
@@ -104,7 +109,7 @@
     }
 
     .search {
-      @include dFlex();
+      @include flex();
       margin: 0 5% 5%;
       height: 2rem;
       background-color: #fff;
@@ -137,7 +142,7 @@
 
   @media (max-width: 500px) {
     .containerMain {
-        gap: .5rem;
+      gap: 0.5rem;
       .more {
         min-width: 200px;
       }

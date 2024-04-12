@@ -24,11 +24,11 @@ const Main = () => {
 
   return (
     <div className="containerMain">
-      <div className="text">
-        <p>Recommended by our librarians</p>
-        <span>View More</span>
-      </div>
       <div className="recommended">
+        <div className="text">
+          <p>Recommended by our librarians</p>
+          <span>View More</span>
+        </div>
         <div className="cards">
           <Cards />
         </div>
@@ -50,7 +50,9 @@ const Main = () => {
           <h3>
             <BsFillStarFill /> New &#38; Notable{" "}
           </h3>
-          <Link to={"/addBook"}>Add book</Link>
+          <p>
+            <Link to={"/addBook"}>Add book</Link>
+          </p>
           <p>New titles</p>
           <p>Award Winners</p>
           <p>Bestellers</p>

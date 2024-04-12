@@ -1,41 +1,44 @@
 import "./Login.scss";
-import { useContext, useState } from "react";
+import { useContext, useRef } from "react";
 import { context } from "../../../context/Context";
 import Main from "../../body/main/Main";
 import useSession from "../../../utils/useSession";
-import Swal from "sweetalert2";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { uid, setUserData } = useContext(context);
-  const { Login } = useSession();
-  const LoginAuth = Login();
-  const [usersData, setUsersData] = useState({});
+  const { login } = useSession();
+  const LoginAuth = login();
+
+  const formData = useRef({ email: "", pass: "" });
+
+  const navigate = useNavigate();
+
   const handlerInput = ({ target }) => {
-    setUsersData({
-      ...usersData,
-      [target.name]: target.value,
-    });
+    formData.current[target.name] = target.value;
   };
 
   const handlerSubmit = (ev) => {
     ev.preventDefault();
-    LoginAuth(usersData, setUserData).then(({ res, message }) => {
-      res
-        ? Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Access Granted ...",
-            showConfirmButton: false,
-            timer: 1500,
-          })
-        : Swal.fire({
-            position: "top-end",
-            icon: "error",
-            title: message,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-    });
+    toast
+      .promise(
+        LoginAuth(formData.current, setUserData),
+        {
+          pending: "Logging In",
+          success: "Login Success",
+          error: "Login Failed",
+        },
+        {
+          autoClose: 500,
+        }
+      )
+      .then(() => {
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      })
+      .catch((err) => new Error(err));
   };
 
   return (

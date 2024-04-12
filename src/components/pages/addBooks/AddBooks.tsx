@@ -1,34 +1,39 @@
 import "./AddBooks.scss";
 import "react-toastify/dist/ReactToastify.css";
-import { useContext, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
 import HandlerData from "../../../utils/HandlerData";
 import { context } from "../../../context/Context";
 
+type InitialState = {
+  [key: string]: string | File;
+};
+
 const AddBooks = () => {
-  const [img, setImg] = useState();
+  const [img, setImg] = useState("");
   const { uid } = useContext(context);
+  const formData = useRef<InitialState | null>({});
 
   const data = new HandlerData(uid);
-  let formData = useRef({});
+
   const FORM_FIELDS = 3;
 
-  const handlerForms = (e) => {
-    if (!e.target) {
-      setImg(URL.createObjectURL(e.value));
-      return (formData.current[e.name] = e.value);
-    }
-    const { name, value } = e.target;
+  const handlerForms = (e: FormEvent<HTMLInputElement>) => {
+    if (!formData.current) return;
+
+    const { name, value } = e.target as HTMLInputElement;
     formData.current[name] = value;
   };
 
   const handlerReset = () => {
-    setImg();
+    setImg("");
   };
 
-  const handlerAdd = (e) => {
+  const handlerAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    if (!formData.current) return;
+
     if (Object.values(formData.current).length < FORM_FIELDS)
       return Swal.fire({
         position: "center",
@@ -39,21 +44,30 @@ const AddBooks = () => {
       });
 
     toast
-      .promise(data.WriteData(formData.current), {
-        pending: "Adding New Book",
-        success: "Book added",
-        error: "We sorry, something went wrong",
-        timer: 500,
-      })
+      .promise(
+        data.WriteData(
+          formData.current as { autor: string; name: string; img: File }
+        ),
+        {
+          pending: "Adding New Book",
+          success: "Book added",
+          error: "We sorry, something went wrong",
+        },
+        {
+          autoClose: 500,
+        }
+      )
       .then(() => {
-        formData = {};
-        setImg();
-        document.getElementById("form").reset();
+        formData.current = null;
+        setImg("");
+        const form = document.getElementById("form");
+        if (form) (form as HTMLFormElement).reset();
       })
       .catch((err) => console.log(err));
   };
 
-  const handlerFile = (file) => {
+  const handlerFile = (file: ChangeEvent<HTMLInputElement>) => {
+    if (!file?.target?.files) return;
     const img = file?.target?.files[0];
     if (img === undefined) return;
 
@@ -69,7 +83,10 @@ const AddBooks = () => {
         showConfirmButton: false,
         timer: 1800,
       });
-    handlerForms({ name: "img", value: img });
+    setImg(URL.createObjectURL(img));
+    if (formData.current) {
+      return (formData.current["img"] = img);
+    }
   };
 
   return (

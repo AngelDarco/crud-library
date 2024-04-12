@@ -2,10 +2,11 @@ import { useEffect, useState, createContext } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase/config";
 import { UserValue } from "../types";
+import uuid from "react-uuid";
 
 const userValue: UserValue = {
-  uid: "",
-  user: "",
+  uid: localStorage.getItem("darco-library-uid") || "",
+  user: "guest",
 };
 
 export const context = createContext(userValue);
@@ -15,8 +16,13 @@ export const AuthProvider = ({ children }: { children: JSX.Element }) => {
 
   useEffect(() => {
     onAuthStateChanged(auth, async (currentUser) => {
-      const { uid, email } = currentUser as User;
-      setUserData({ uid, user: email || "" });
+      if (currentUser) {
+        const { uid, email } = currentUser as User;
+        setUserData({ uid, user: email || "guest" });
+        localStorage.setItem("darco-library-uid", uid);
+      } else {
+        localStorage.setItem("darco-library-uid", uuid());
+      }
     });
   }, []);
 

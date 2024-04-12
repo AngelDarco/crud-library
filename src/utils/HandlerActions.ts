@@ -9,9 +9,11 @@ type StoreData = {
 
 export default class HandlerActions {
   uid: string;
+  name: string;
   data: HandlerData;
-  constructor(uid: string) {
+  constructor(uid: string, name: string) {
     this.uid = uid;
+    this.name = name;
     this.data = new HandlerData(this.uid);
   }
 
@@ -89,7 +91,7 @@ export default class HandlerActions {
   }
 
   async HandlerLikes(data: Data) {
-    if (this.uid === "") {
+    if (this.name === "guest") {
       this.alert("error", "Sorry, You must log first", 1000, "center");
       return;
     }
@@ -101,15 +103,15 @@ export default class HandlerActions {
       : this.alert("warning", "Unlike", 500, "top-right");
   }
 
-  HandlerDelete(itm: Data) {
-    if (this.uid === "") {
-      this.alert("error", "Sorry, You must log first", 1000);
-      return;
-    }
-    if (this.uid === itm.owner) {
-      this.data.DeleteData(itm.id, itm.imgName).then(() => {
-        this.alert("success", "deleted", 1000);
-      });
-    } else this.alert("warning", "You just can delete your books", 1000);
+  async HandlerDelete(itm: Data) {
+    if (
+      this.uid === itm.owner ||
+      this.uid === import.meta.env.VITE_SUPER_USER
+    ) {
+      await this.data
+        .DeleteData(itm)
+        .then(() => this.alert("success", "deleted", 1000))
+        .catch((err) => this.alert("error", err, 1500));
+    } else this.alert("warning", "You just can delete your books", 1500);
   }
 }

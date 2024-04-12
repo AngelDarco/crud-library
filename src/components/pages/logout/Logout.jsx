@@ -1,24 +1,35 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase/config";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { CirclesWithBar } from "react-loader-spinner";
+import { toast } from "react-toastify";
+import { useContext, useEffect } from "react";
+import { context } from "../../../context/Context";
 
 const Logout = () => {
   const navigate = useNavigate();
-  (async () => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      console.log(err);
-    }
-  })();
+  const { setUserData } = useContext(context);
 
   useEffect(() => {
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
+    toast
+      .promise(
+        signOut(auth),
+        {
+          pending: "Logging out",
+          success: "Logged out",
+          error: "We sorry, something went wrong",
+        },
+        {
+          autoClose: 500,
+        }
+      )
+      .then(() => {
+        setUserData({ uid: "", user: "" });
+        navigate("/");
+      })
+      .catch((err) => new Error(err));
   }, []);
+
   return (
     <CirclesWithBar
       width="200"
